@@ -46,10 +46,6 @@ function origin() {
         ${line('<em>+</em> Embedded Firmware')}
       </p>
     </div>
-    <div class="origin-meta" data-a="fade">
-      <p class="mono dim">Engineering roadmap</p>
-      <p class="mono">${t(`${site.span.from} → ${site.span.to}`)}</p>
-    </div>
   </div>
 </section>`;
 }

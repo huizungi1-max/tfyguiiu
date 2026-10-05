@@ -261,7 +261,6 @@ function chrome() {
 <header class="chrome" data-chrome>
   <button type="button" class="wordmark" data-goto-step="0" aria-label="Kaushal — return to origin">Kaushal</button>
   <div class="chrome-right">
-    <button type="button" class="chip-btn mono" data-sound aria-pressed="false"><span class="snd-dot" aria-hidden="true"></span><span data-sound-label>Sound off</span></button>
     <button type="button" class="chip-btn mono indicator" data-menu-open aria-haspopup="dialog" aria-expanded="false" aria-controls="menu">
       <span class="ind-n"><span data-ind-cur>01</span><span class="dim"> / ${pad(sections.length)}</span></span>
       <span class="ind-label" data-ind-label>${esc(sections[0].label)}</span>

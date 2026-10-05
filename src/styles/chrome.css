@@ -63,23 +63,27 @@
   background: var(--acc);
   border-color: var(--acc);
 }
+/* The indicator is kept compact so it never crosses the monolith at the top-right. */
 .indicator {
-  gap: 12px;
+  gap: 9px;
+  height: 30px;
+  padding: 0 11px;
+  font-size: 10.5px;
 }
 .ind-n {
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 .ind-label {
-  min-width: 6.5em;
+  min-width: 0;
 }
 .ind-burger {
   display: grid;
-  gap: 4px;
+  gap: 3px;
 }
 .ind-burger i {
   display: block;
-  width: 14px;
+  width: 12px;
   height: 1px;
   background: currentColor;
 }

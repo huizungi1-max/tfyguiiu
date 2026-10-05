@@ -142,15 +142,21 @@ html:not(.js) .origin-name {
 .origin-primary {
   font-family: var(--f-display);
   font-stretch: 125%;
-  font-weight: 500;
+  font-weight: 700;
   text-transform: uppercase;
   font-size: clamp(19px, 2.13vw, 37px);
-  line-height: 0.98;
-  letter-spacing: -0.02em;
+  line-height: 1.0;
+  letter-spacing: -0.01em;
+  /* same silver sheen as the KAUSHAL wordmark so the stack reads as one voice */
+  background: linear-gradient(180deg, #f6f4ee 0%, #e7e4dd 42%, #908d87 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 .origin-primary em {
   font-style: normal;
   color: var(--acc);
+  -webkit-text-fill-color: var(--acc);
 }
 .origin-meta {
   text-align: right;

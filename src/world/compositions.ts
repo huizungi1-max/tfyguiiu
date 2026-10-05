@@ -268,7 +268,9 @@ function composeBase(kind: StepKind, sub: number, vp: Viewport): Composition {
       const h = HERO.p;
       return {
         formation: monolith(h, HERO.yaw),
-        shot: P ? shot([h.x, h.y + 0.6, h.z], 22.5, HERO.az, -4, 46, 0, 0.12) : shot([h.x + 0.1, h.y - 0.05, h.z], 16 * fit, HERO.az, -4, 33, -0.07, 0.02),
+        // The portrait holds the left; the monolith is pushed to the far right (lens shift sx)
+        // and lifted a touch so it stands clear of the name laid along the lower band.
+        shot: P ? shot([h.x, h.y + 0.6, h.z], 22.5, HERO.az, -4, 46, 0.26, 0.2) : shot([h.x + 0.1, h.y - 0.05, h.z], 16.5 * fit, HERO.az, -4, 33, 0.72, 0.4),
         accent: zeros(),
         strip: 'long',
       };

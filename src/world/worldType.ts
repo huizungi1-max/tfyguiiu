@@ -76,7 +76,9 @@ export class WorldType implements StageSystem {
     obj.rotation.y = THREE.MathUtils.degToRad(HERO.az);
     this.nameObj = obj;
     this.nameEl = el;
-    this.add(obj, el, (s) => (s.kind === 'origin' ? 1 : 0));
+    // The origin name is rendered as DOM typography (see .origin-name), laid beside the
+    // portrait, so the in-world wordmark stays hidden.
+    this.add(obj, el, () => 0);
     this.layoutName();
     addEventListener('resize', () => this.layoutName());
   }

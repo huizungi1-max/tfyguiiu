@@ -30,7 +30,30 @@ html.js.portrait .kicker {
 }
 
 /* — 01 origin ——————————————————————————————————————————————————————— */
+/* Upright: the portrait sits across the top, the name beneath it, copy at the foot. */
+html.js.portrait .origin-portrait {
+  left: calc(-1 * var(--m));
+  top: calc(-1 * (var(--top) + 64px));
+  bottom: auto;
+  height: 50vh;
+  object-position: left top;
+  -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent 100%),
+    linear-gradient(90deg, #000 80%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(180deg, #000 70%, transparent 100%),
+    linear-gradient(90deg, #000 80%, transparent 100%);
+  mask-composite: intersect;
+}
+html.js.portrait .origin-name {
+  left: var(--m);
+  right: var(--m);
+  top: auto;
+  bottom: calc(var(--copy-bottom) + 148px);
+  font-size: clamp(38px, 13.4vw, 100px);
+}
 html.js.portrait .origin-foot {
+  left: var(--m);
+  right: var(--m);
   bottom: var(--copy-bottom);
   flex-direction: column;
   align-items: flex-start;

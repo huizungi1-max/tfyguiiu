@@ -55,11 +55,69 @@ html.js .col-left {
 /* ==========================================================================
    01 — Origin
    ========================================================================== */
+.panel-origin {
+  /* Tunable landscape layout: name sits right of the body, at the lower band. */
+  --photo-h: 100vh;
+  --body-right: 44vh; /* approx right edge of the subject in the portrait */
+  --name-bottom: clamp(120px, 20vh, 210px);
+}
+
+/* The portrait holds the left edge, full height. Its near-black ground blends into the
+   page, so it reads as a figure emerging from the dark rather than a boxed photo. */
+.origin-portrait {
+  position: absolute;
+  left: calc(-1 * var(--m));
+  bottom: calc(-1 * (var(--top) + 54px));
+  height: var(--photo-h);
+  width: auto;
+  max-width: none;
+  object-fit: contain;
+  object-position: left bottom;
+  pointer-events: none;
+  z-index: 2;
+  -webkit-user-select: none;
+  user-select: none;
+  /* feather the right/top edges into the background */
+  -webkit-mask-image: linear-gradient(90deg, #000 72%, transparent 100%),
+    linear-gradient(0deg, #000 86%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, #000 72%, transparent 100%),
+    linear-gradient(0deg, #000 86%, transparent 100%);
+  mask-composite: intersect;
+}
+html:not(.js) .origin-portrait {
+  display: none;
+}
+
+/* The name, laid along the lower band, beginning at the right of the body. */
+html.js .origin-name {
+  position: absolute;
+  left: var(--body-right);
+  bottom: var(--name-bottom);
+  z-index: 3;
+  margin: 0;
+  font-family: var(--f-display);
+  font-stretch: 125%;
+  font-weight: 300;
+  font-size: clamp(48px, 9.4vw, 150px);
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #f6f4ee 0%, #d9d6cf 46%, #8f8c86 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+html:not(.js) .origin-name {
+  display: none;
+}
+
 html.js .origin-foot {
   position: absolute;
-  left: var(--m);
+  left: var(--body-right);
   right: var(--m);
   bottom: calc(var(--top) + 6px);
+  z-index: 3;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;

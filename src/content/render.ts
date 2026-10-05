@@ -34,7 +34,9 @@ function origin() {
   return `
 <section id="origin" class="panel panel-origin" data-section="0" aria-labelledby="origin-title">
   <h1 id="origin-title" class="sr-only">Kaushal — ${t(site.field)}. ${t(site.primary)}.</h1>
+  <img class="origin-portrait" src="/portrait.jpg" alt="" aria-hidden="true" decoding="async" fetchpriority="high" />
   <p class="doc-name" aria-hidden="true">Kaushal</p>
+  <p class="origin-name" aria-hidden="true" data-a="fade">Kaushal</p>
   <div class="origin-foot">
     <div class="origin-id">
       <p class="mono dim" data-a="fade">${t(site.fieldLong)}</p>

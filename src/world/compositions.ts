@@ -270,7 +270,7 @@ function composeBase(kind: StepKind, sub: number, vp: Viewport): Composition {
         formation: monolith(h, HERO.yaw),
         // The portrait holds the left; the monolith is pushed to the far right (lens shift sx)
         // and lifted a touch so it stands clear of the name laid along the lower band.
-        shot: P ? shot([h.x, h.y + 0.6, h.z], 22.5, HERO.az, -4, 46, 0.26, 0.2) : shot([h.x + 0.1, h.y - 0.05, h.z], 16.5 * fit, HERO.az, -4, 33, 0.72, 0.4),
+        shot: P ? shot([h.x, h.y + 0.6, h.z], 22.5, HERO.az, -4, 46, 0.26, 0.2) : shot([h.x + 0.1, h.y - 0.05, h.z], 19.5 * fit, HERO.az, -4, 33, 0.72, 0.24),
         accent: zeros(),
         strip: 'long',
       };

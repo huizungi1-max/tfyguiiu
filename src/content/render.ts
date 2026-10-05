@@ -33,19 +33,22 @@ function kicker(index: number, label: string, extra = '') {
 function origin() {
   return `
 <section id="origin" class="panel panel-origin" data-section="0" aria-labelledby="origin-title">
-  <h1 id="origin-title" class="sr-only">Kaushal — ${t(site.field)}. ${t(site.primary)}.</h1>
+  <h1 id="origin-title" class="sr-only">Kaushal — Electronics &amp; Communication Engineering. Digital Systems / FPGA · RTL Design + Embedded Systems.</h1>
   <img class="origin-portrait" src="/portrait.jpg" alt="" aria-hidden="true" decoding="async" fetchpriority="high" />
   <p class="doc-name" aria-hidden="true">Kaushal</p>
-  <p class="origin-name" aria-hidden="true" data-a="fade">Kaushal</p>
-  <div class="origin-foot">
-    <div class="origin-id">
-      <p class="mono dim" data-a="fade">${t(site.fieldLong)}</p>
-      <p class="origin-primary" aria-hidden="true">
-        ${line('Digital Hardware')}
-        ${line('<em>/</em> FPGA-RTL')}
-        ${line('<em>+</em> Embedded Firmware')}
-      </p>
+  <div class="origin-block">
+    <div class="origin-head" data-a="fade">
+      <span class="origin-bar" aria-hidden="true"></span>
+      <span class="origin-head-txt">
+        <span class="origin-name" aria-hidden="true">Kaushal</span>
+        <span class="origin-sub mono">Electronics &amp; Communication Engineering</span>
+      </span>
     </div>
+    <p class="origin-primary" aria-hidden="true">
+      ${line('Digital Systems')}
+      ${line('<em>/</em> FPGA · RTL Design')}
+      ${line('<em>+</em> Embedded Systems')}
+    </p>
   </div>
 </section>`;
 }

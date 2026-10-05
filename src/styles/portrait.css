@@ -44,24 +44,16 @@ html.js.portrait .origin-portrait {
     linear-gradient(90deg, #000 80%, transparent 100%);
   mask-composite: intersect;
 }
-html.js.portrait .origin-name {
-  left: var(--m);
-  right: var(--m);
-  top: auto;
-  bottom: calc(var(--copy-bottom) + 148px);
-  font-size: clamp(38px, 13.4vw, 100px);
-}
-html.js.portrait .origin-foot {
+html.js.portrait .origin-block {
   left: var(--m);
   right: var(--m);
   bottom: var(--copy-bottom);
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 14px;
 }
-html.js.portrait .origin-meta {
-  text-align: left;
-  padding-bottom: 0;
+html.js.portrait .origin-head {
+  margin-bottom: 16px;
+}
+html.js.portrait .origin-name {
+  font-size: clamp(38px, 13vw, 92px);
 }
 html.js.portrait .origin-primary {
   font-size: clamp(20px, 5.6vw, 34px);

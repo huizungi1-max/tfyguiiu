@@ -56,10 +56,9 @@ html.js .col-left {
    01 — Origin
    ========================================================================== */
 .panel-origin {
-  /* Tunable landscape layout: name sits right of the body, at the lower band. */
+  /* Tunable landscape layout: the text stack sits right of the body, at the lower band. */
   --photo-h: 100vh;
   --body-right: 44vh; /* approx right edge of the subject in the portrait */
-  --name-bottom: clamp(120px, 20vh, 210px);
 }
 
 /* The portrait holds the left edge, full height. Its near-black ground blends into the
@@ -89,39 +88,52 @@ html:not(.js) .origin-portrait {
   display: none;
 }
 
-/* The name, laid along the lower band, beginning at the right of the body. */
-html.js .origin-name {
+/* The lower-left stack: an accent bar + name + field line, then the primary tagline. */
+html.js .origin-block {
   position: absolute;
   left: var(--body-right);
-  bottom: var(--name-bottom);
+  right: var(--m);
+  bottom: calc(var(--top) + 10px);
   z-index: 3;
-  margin: 0;
+}
+.origin-head {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(12px, 1vw, 22px);
+  margin-bottom: clamp(18px, 2.6vh, 34px);
+}
+.origin-bar {
+  flex: none;
+  width: clamp(3px, 0.32vw, 6px);
+  background: var(--acc);
+  align-self: stretch;
+}
+.origin-head-txt {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(5px, 1vh, 13px);
+}
+.origin-name {
+  display: block;
   font-family: var(--f-display);
   font-stretch: 125%;
-  font-weight: 300;
-  font-size: clamp(48px, 9.4vw, 150px);
-  line-height: 0.9;
-  letter-spacing: 0.01em;
+  font-weight: 700;
+  font-size: clamp(44px, 8vw, 120px);
+  line-height: 0.84;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
-  background: linear-gradient(180deg, #f6f4ee 0%, #d9d6cf 46%, #8f8c86 100%);
+  background: linear-gradient(180deg, #f6f4ee 0%, #e7e4dd 42%, #908d87 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
+.origin-sub {
+  color: var(--ink-3);
+  letter-spacing: 0.17em;
+}
 html:not(.js) .origin-name {
   display: none;
-}
-
-html.js .origin-foot {
-  position: absolute;
-  left: var(--body-right);
-  right: var(--m);
-  bottom: calc(var(--top) + 6px);
-  z-index: 3;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 32px;
 }
 .origin-id .mono {
   margin-bottom: 14px;

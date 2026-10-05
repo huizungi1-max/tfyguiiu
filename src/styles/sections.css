@@ -184,7 +184,7 @@ html:not(.js) .origin-name {
 }
 .pl-cap {
   flex: none;
-  width: clamp(44px, 4.2vw, 64px);
+  width: clamp(54px, 5vw, 80px);
   height: auto;
   overflow: visible;
 }

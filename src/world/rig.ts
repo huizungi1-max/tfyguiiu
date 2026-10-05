@@ -146,11 +146,12 @@ export class CameraRig {
     const px = this.pointerSmoothed.x * this.parallax;
     const py = this.pointerSmoothed.y * this.parallax;
     const d = this.drift;
-    const az = o.az + px * 0.05 + d * 0.014 * Math.sin(time * 0.11);
-    const el = o.el - py * 0.032 + d * 0.01 * Math.sin(time * 0.153 + 1.3);
+    // Idle breath: a slow, barely-there sway so a still frame is not dead — not a shake.
+    const az = o.az + px * 0.05 + d * 0.005 * Math.sin(time * 0.08);
+    const el = o.el - py * 0.032 + d * 0.0035 * Math.sin(time * 0.11 + 1.3);
     const cosEl = Math.cos(el);
     this.tgt.copy(o.target);
-    this.tgt.y += d * 0.04 * Math.sin(time * 0.19 + 0.4);
+    this.tgt.y += d * 0.014 * Math.sin(time * 0.13 + 0.4);
     this.pos.set(
       this.tgt.x + o.dist * Math.sin(az) * cosEl,
       this.tgt.y + o.dist * Math.sin(el),

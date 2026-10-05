@@ -22,16 +22,21 @@
 }
 .wt-name-inner {
   display: block;
+}
+/* The fill lives on each letter: a text-clipped gradient on the parent is painted at the
+   parent's origin by Chromium once the letters carry their own transforms (the intro),
+   which stacks every glyph on the first one. The gradient is vertical, so per-letter
+   fills read as one. */
+.wt-ch {
+  display: inline-block;
   background: linear-gradient(180deg, #f6f4ee 0%, #d9d6cf 46%, #8f8c86 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
-.wt-ch {
-  display: inline-block;
-}
+/* backwards, not both: nothing is left transformed once the letters have arrived */
 html.intro .wt-ch {
-  animation: wt-ch-in 1.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: wt-ch-in 1.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
   animation-delay: calc(1.05s + var(--i) * 0.075s);
 }
 @keyframes wt-ch-in {

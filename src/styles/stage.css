@@ -35,30 +35,8 @@
 }
 
 .grain {
-  position: fixed;
-  inset: -60px;
-  z-index: 40;
-  pointer-events: none;
-  opacity: 0.03;
-  background-image: var(--grain, none);
-  background-size: 200px 200px;
-  will-change: transform;
-  /* a slow, small jitter: fine film grain, not a flickering screen */
-  animation: grain 2.4s steps(4) infinite;
-}
-@keyframes grain {
-  0% { transform: translate3d(0, 0, 0); }
-  25% { transform: translate3d(-14px, 9px, 0); }
-  50% { transform: translate3d(10px, -16px, 0); }
-  75% { transform: translate3d(-8px, -6px, 0); }
-  100% { transform: translate3d(0, 0, 0); }
-}
-/* motion-sensitive visitors: keep the texture, drop the movement */
-html.reduced .grain {
-  animation: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .grain { animation: none; }
+  /* grain disabled: no film-grain overlay at all */
+  display: none;
 }
 
 .veil {

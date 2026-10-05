@@ -33,7 +33,7 @@ function kicker(index: number, label: string, extra = '') {
 function origin() {
   return `
 <section id="origin" class="panel panel-origin" data-section="0" aria-labelledby="origin-title">
-  <h1 id="origin-title" class="sr-only">Kaushal — Electronics &amp; Communication Engineering. Digital Systems / FPGA · RTL Design + Embedded Systems.</h1>
+  <h1 id="origin-title" class="sr-only">Kaushal — Electronics &amp; Communication Engineering. Ideas into circuits; circuits into real solutions.</h1>
   <img class="origin-portrait" src="/portrait.jpg" alt="" aria-hidden="true" decoding="async" fetchpriority="high" />
   <p class="doc-name" aria-hidden="true">Kaushal</p>
   <div class="origin-block">
@@ -44,11 +44,16 @@ function origin() {
         <span class="origin-sub mono">Electronics &amp; Communication Engineering</span>
       </span>
     </div>
-    <p class="origin-primary" aria-hidden="true">
-      ${line('Digital Systems')}
-      ${line('<em>/</em> FPGA · RTL Design')}
-      ${line('<em>+</em> Embedded Systems')}
-    </p>
+    <div class="origin-primary" aria-hidden="true" data-a="rise">
+      <span class="pl-row">
+        <span class="pl-txt"><em class="lead">Ideas</em> <em class="into">into</em> Circuits.</span>
+        <span class="pl-trace" aria-hidden="true"><span class="pl-line"></span><svg class="pl-cap" viewBox="0 0 64 40" fill="none" aria-hidden="true"><path d="M0 20 H28 L44 7 H58"/><circle cx="60.5" cy="7" r="3.2"/></svg></span>
+      </span>
+      <span class="pl-row">
+        <span class="pl-txt"><em class="lead">Circuits</em> <em class="into">into</em> Real Solutions.</span>
+        <span class="pl-trace" aria-hidden="true"><span class="pl-line"></span><svg class="pl-cap" viewBox="0 0 64 40" fill="none" aria-hidden="true"><path d="M0 20 H58"/><circle cx="60.5" cy="20" r="3.2"/></svg></span>
+      </span>
+    </div>
   </div>
 </section>`;
 }

@@ -140,23 +140,62 @@ html:not(.js) .origin-name {
   margin-bottom: 14px;
 }
 .origin-primary {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(9px, 1.5vh, 18px);
   font-family: var(--f-display);
   font-stretch: 125%;
   font-weight: 700;
   text-transform: uppercase;
   font-size: clamp(19px, 2.13vw, 37px);
-  line-height: 1.0;
+  line-height: 1;
   letter-spacing: -0.01em;
-  /* same silver sheen as the KAUSHAL wordmark so the stack reads as one voice */
-  background: linear-gradient(180deg, #f6f4ee 0%, #e7e4dd 42%, #908d87 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--ink);
 }
-.origin-primary em {
+.pl-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 1.8vw, 32px);
+}
+.pl-txt {
+  flex: none;
+  white-space: nowrap;
+}
+.pl-txt .lead {
   font-style: normal;
   color: var(--acc);
-  -webkit-text-fill-color: var(--acc);
+}
+.pl-txt .into {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+/* Circuit trace: a horizontal run that grows to fill, ending in a routed node pad. */
+.pl-trace {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 48px;
+}
+.pl-line {
+  flex: 1 1 auto;
+  height: 2px;
+  background: var(--acc);
+}
+.pl-cap {
+  flex: none;
+  width: clamp(44px, 4.2vw, 64px);
+  height: auto;
+  overflow: visible;
+}
+.pl-cap path {
+  stroke: var(--acc);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.pl-cap circle {
+  fill: var(--acc);
 }
 .origin-meta {
   text-align: right;

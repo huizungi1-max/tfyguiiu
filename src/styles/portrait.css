@@ -58,6 +58,16 @@ html.js.portrait .origin-name {
 html.js.portrait .origin-primary {
   font-size: clamp(17px, 4.76vw, 29px);
 }
+html.js.portrait .pl-trace {
+  display: none;
+}
+html.js.portrait .pl-row {
+  align-items: flex-start;
+}
+html.js.portrait .pl-txt {
+  white-space: normal;
+  flex: 1 1 auto;
+}
 
 /* — 02 position ————————————————————————————————————————————————————— */
 html.js.portrait .panel-position .display {

@@ -1,0 +1,318 @@
+/* ==========================================================================
+   World typography (CSS3D). 100 CSS px = 1 world unit.
+   ========================================================================== */
+.wt {
+  pointer-events: none !important;
+  user-select: none;
+  color: var(--ink);
+  font-family: var(--f-display);
+  white-space: nowrap;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* — The name ——————————————————————————————————————————————————————— */
+.wt-name {
+  font-stretch: 125%;
+  font-weight: 300;
+  font-size: 285px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+.wt-name-inner {
+  display: block;
+  background: linear-gradient(180deg, #f6f4ee 0%, #d9d6cf 46%, #8f8c86 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.wt-ch {
+  display: inline-block;
+}
+html.intro .wt-ch {
+  animation: wt-ch-in 1.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(1.05s + var(--i) * 0.075s);
+}
+@keyframes wt-ch-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 38%, 0) scaleY(1.25);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* — Tread lettering ———————————————————————————————————————————————— */
+.wt-tread {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  color: rgba(236, 234, 228, 0.86);
+  transition: color 0.5s;
+}
+.wt-t-id {
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 118px;
+  line-height: 0.86;
+  letter-spacing: -0.04em;
+}
+.wt-t-date {
+  font-family: var(--f-mono);
+  font-size: 19px;
+  letter-spacing: 0.12em;
+  color: rgba(236, 234, 228, 0.55);
+}
+.wt-t-date b {
+  font-weight: 400;
+  color: var(--acc);
+}
+.wt-tread.is-sel {
+  color: #fff;
+}
+.wt-tread.is-sel .wt-t-id {
+  text-shadow: 0 0 40px rgba(255, 255, 255, 0.12);
+}
+
+/* — Capability plan ———————————————————————————————————————————————— */
+.wt-grp {
+  width: 600px;
+  height: 372px;
+  padding: 26px 30px;
+  display: flex;
+  flex-direction: column;
+  white-space: normal;
+}
+.wt-grp-head {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.wt-grp-tier {
+  font-family: var(--f-mono);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(236, 234, 228, 0.5);
+}
+.wt-grp-core .wt-grp-tier {
+  color: var(--acc);
+}
+.wt-grp-name {
+  margin: 0;
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 50px;
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+.wt-grp-items {
+  margin: auto 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 2), 1fr);
+  column-gap: 18px;
+  row-gap: 5px;
+  font-family: var(--f-mono);
+  font-size: 16.5px;
+  letter-spacing: 0.02em;
+  color: rgba(236, 234, 228, 0.82);
+  border-top: 1px solid rgba(236, 234, 228, 0.16);
+  padding-top: 14px;
+}
+.wt-grp-note {
+  margin: 12px 0 0;
+  font-family: var(--f-mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: rgba(236, 234, 228, 0.5);
+}
+.wt-grp-software .wt-grp-items {
+  font-size: 14px;
+  letter-spacing: 0;
+  row-gap: 3px;
+}
+
+/* — Lanes ——————————————————————————————————————————————————————————— */
+.wt-lane {
+  width: 380px;
+  white-space: normal;
+  display: grid;
+  gap: 10px;
+}
+.wt-lane-fam {
+  font-family: var(--f-mono);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(236, 234, 228, 0.5);
+}
+.wt-lane-name {
+  margin: 0;
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 44px;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+.wt-lane-items {
+  margin: 4px 0 0;
+  font-family: var(--f-mono);
+  font-size: 15px;
+  line-height: 1.55;
+  letter-spacing: 0.03em;
+  color: rgba(236, 234, 228, 0.72);
+}
+.wt-lane-items i {
+  font-style: normal;
+  padding: 0 0.5em;
+  color: rgba(236, 234, 228, 0.3);
+}
+.wt-lane.is-core .wt-lane-fam {
+  color: var(--acc);
+}
+.wt-found {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 40px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(236, 234, 228, 0.9);
+}
+.wt-found small {
+  font-family: var(--f-mono);
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: 0.16em;
+  color: rgba(236, 234, 228, 0.5);
+}
+
+/* ==========================================================================
+   Projected labels (screen-aligned, anchored to 3D points)
+   ========================================================================== */
+.lbl {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform, opacity;
+  pointer-events: none;
+  opacity: 0;
+  white-space: nowrap;
+}
+.lbl-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transform: translateY(-50%);
+}
+.lbl-rule {
+  width: 34px;
+  height: 1px;
+  background: var(--ink-4);
+}
+.lbl-text {
+  font-family: var(--f-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.lbl.is-core .lbl-rule {
+  width: 40px;
+  background: var(--acc);
+}
+.lbl.is-core .lbl-text {
+  font-family: var(--f-display);
+  font-stretch: 125%;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.04;
+  font-size: clamp(13px, 1.02vw, 18px);
+  color: var(--ink);
+}
+.lbl-tag {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--acc);
+  text-transform: uppercase;
+}
+.lbl-joint .lbl-inner {
+  transform: translate(-50%, -50%);
+  padding: 6px 10px 5px;
+  border: 1px solid rgba(236, 234, 228, 0.16);
+  border-radius: 999px;
+  background: rgba(5, 5, 6, 0.55);
+}
+.lbl-joint .lbl-text {
+  font-size: 10.5px;
+  color: var(--ink);
+}
+.lbl-joint .lbl-k {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--acc);
+}
+.lbl-fig .lbl-inner {
+  transform: translate(0, -50%);
+}
+
+/* lanes */
+.lbl-stack {
+  display: grid;
+  gap: 3px;
+}
+.lbl-fam {
+  font-family: var(--f-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.lbl-lane .lbl-text {
+  font-family: var(--f-display);
+  font-stretch: 125%;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: clamp(13px, 1.05vw, 18px);
+  color: var(--ink);
+}
+.lbl-items {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+  white-space: normal;
+  max-width: 25em;
+  line-height: 1.45;
+}
+.lbl-lane.is-core .lbl-fam {
+  color: var(--acc);
+}
+.lbl-lane.is-core .lbl-rule {
+  background: var(--acc);
+  width: 46px;
+}
+.lbl-lane.is-core .lbl-items {
+  color: var(--ink-2);
+}
+.lbl-found .lbl-inner {
+  transform: translate(-100%, -50%);
+}
+.lbl-right {
+  text-align: right;
+}
+.lbl-fig .lbl-text {
+  font-size: 10.5px;
+  color: var(--ink-2);
+}

@@ -1,0 +1,262 @@
+/* ==========================================================================
+   Chrome — quiet orientation, never dominant
+   ========================================================================== */
+.chrome {
+  position: fixed;
+  z-index: 30;
+  left: 0;
+  right: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--top) var(--m) 0;
+  pointer-events: none;
+}
+.chrome > *,
+.chrome-right > * {
+  pointer-events: auto;
+}
+.wordmark {
+  font-family: var(--f-display);
+  font-stretch: 125%;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  padding: 10px 0;
+}
+.chrome-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-2);
+  transition: color 0.3s, border-color 0.3s, background-color 0.3s;
+  /* solid, not frosted: the controls stay legible over a lit plate without glass effects */
+  background: rgba(8, 8, 9, 0.94);
+}
+.chip-btn:hover,
+.chip-btn:focus-visible {
+  color: var(--ink);
+  border-color: var(--ink-4);
+}
+.snd-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+[data-sound][aria-pressed='true'] {
+  color: var(--ink);
+}
+[data-sound][aria-pressed='true'] .snd-dot {
+  background: var(--acc);
+  border-color: var(--acc);
+}
+.indicator {
+  gap: 12px;
+}
+.ind-n {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.ind-label {
+  min-width: 6.5em;
+}
+.ind-burger {
+  display: grid;
+  gap: 4px;
+}
+.ind-burger i {
+  display: block;
+  width: 14px;
+  height: 1px;
+  background: currentColor;
+}
+
+/* Section rail — seven ticks on the right edge */
+.rail {
+  position: fixed;
+  z-index: 30;
+  right: calc(var(--m) - 8px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+.rail ol {
+  display: grid;
+  gap: 2px;
+}
+.rail-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  height: 22px;
+  padding: 0 8px;
+  color: var(--ink-3);
+}
+.rail-tick {
+  width: 14px;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.6s var(--e-out), background-color 0.4s;
+}
+.rail-label {
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity 0.3s, transform 0.4s var(--e-out);
+  white-space: nowrap;
+}
+.rail-btn:hover .rail-label,
+.rail-btn:focus-visible .rail-label {
+  opacity: 1;
+  transform: none;
+}
+.rail-btn:hover,
+.rail-btn:focus-visible {
+  color: var(--ink);
+}
+.rail-btn[aria-current='step'] {
+  color: var(--ink);
+}
+.rail-btn[aria-current='step'] .rail-tick {
+  width: 30px;
+  background: var(--acc);
+}
+
+/* Next — names where the next gesture goes */
+.next {
+  position: fixed;
+  z-index: 30;
+  right: var(--m);
+  bottom: var(--top);
+  transition: opacity 0.5s;
+}
+.next-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  color: var(--ink-2);
+  transition: color 0.3s;
+}
+.next-btn:hover,
+.next-btn:focus-visible {
+  color: var(--ink);
+}
+.next-btn .ar {
+  transition: transform 0.5s var(--e-out);
+}
+.next-btn:hover .ar-down {
+  transform: rotate(90deg) translateX(3px);
+}
+.next.is-end .ar-down {
+  transform: rotate(-90deg);
+}
+/* the contact footer carries its own "Return to origin" — no second one in the corner */
+.next.is-end {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s, visibility 0s linear 0.4s;
+}
+.next.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Index menu */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(5, 5, 6, 0.95);
+  display: grid;
+  align-items: center;
+  padding: calc(var(--top) + 70px) var(--m) var(--m);
+  opacity: 0;
+  transition: opacity 0.45s var(--e-out);
+}
+.menu.is-open {
+  opacity: 1;
+}
+.menu-inner {
+  width: 100%;
+  max-width: 1400px;
+}
+.menu-k {
+  margin-bottom: 3vh;
+}
+.menu-list {
+  display: grid;
+  gap: 0.2vh;
+}
+.menu-btn {
+  display: flex;
+  align-items: baseline;
+  gap: 2.4vw;
+  width: 100%;
+  padding: 0.6vh 0;
+  text-align: left;
+  color: var(--ink-3);
+  transition: color 0.35s;
+}
+.menu-btn:hover,
+.menu-btn:focus-visible,
+.menu-btn[aria-current='true'] {
+  color: var(--ink);
+}
+.menu-btn[aria-current='true'] .menu-n {
+  color: var(--acc);
+}
+.menu-n {
+  width: 3em;
+  flex: none;
+}
+.menu-t {
+  font-family: var(--f-display);
+  font-stretch: 125%;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-size: clamp(34px, 6.6vh, 84px);
+  transition: transform 0.6s var(--e-out);
+}
+.menu-btn:hover .menu-t {
+  transform: translateX(0.18em);
+}
+.menu-close {
+  position: absolute;
+  top: var(--top);
+  right: var(--m);
+}
+
+@media (max-width: 760px) {
+  .rail {
+    display: none;
+  }
+  .ind-label {
+    display: none;
+  }
+  .chip-btn {
+    height: 34px;
+    padding: 0 12px;
+  }
+  .next {
+    right: var(--m);
+    bottom: calc(var(--top) - 4px);
+  }
+  .next-k {
+    display: none;
+  }
+}

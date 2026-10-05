@@ -1,0 +1,611 @@
+/* ==========================================================================
+   Shared
+   ========================================================================== */
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--f-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-bottom: clamp(18px, 2.6vh, 30px);
+}
+.kicker-n {
+  color: var(--acc);
+}
+.kicker-rule {
+  width: 28px;
+  height: 1px;
+  background: var(--ink-4);
+}
+.col-left {
+  width: var(--col);
+}
+html.js .col-left {
+  position: absolute;
+  left: var(--m);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chips li {
+  font-family: var(--f-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  padding: 7px 9px 6px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.chips-quiet li {
+  border-color: transparent;
+  background: rgba(236, 234, 228, 0.055);
+  color: var(--ink-2);
+}
+
+/* ==========================================================================
+   01 — Origin
+   ========================================================================== */
+html.js .origin-foot {
+  position: absolute;
+  left: var(--m);
+  right: var(--m);
+  bottom: calc(var(--top) + 6px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+}
+.origin-id .mono {
+  margin-bottom: 14px;
+}
+.origin-primary {
+  font-family: var(--f-display);
+  font-stretch: 125%;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: clamp(22px, 2.5vw, 44px);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+.origin-primary em {
+  font-style: normal;
+  color: var(--acc);
+}
+.origin-meta {
+  text-align: right;
+  padding-bottom: 46px;
+}
+
+/* ==========================================================================
+   02 — Position
+   ========================================================================== */
+.panel-position .display {
+  margin-bottom: clamp(22px, 3.4vh, 40px);
+}
+.panel-position .lede {
+  max-width: 27em;
+}
+html.js .panel-position .col-left {
+  width: min(40vw, 640px);
+}
+.legend {
+  display: flex;
+  gap: 22px;
+  margin-top: clamp(20px, 3vh, 34px);
+  font-family: var(--f-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.legend i {
+  width: 18px;
+  height: 2px;
+  background: var(--ink-3);
+}
+.legend-core i {
+  background: var(--acc);
+}
+/* the nine layers as text (document modes and upright screens) */
+.layer-list {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 3px;
+  margin-top: 14px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+.layer-list li:not(:last-child)::after {
+  content: '·';
+  margin: 0 0.5em;
+  color: var(--ink-4);
+}
+.layer-list .is-core {
+  color: var(--acc);
+}
+
+/* ==========================================================================
+   03 — Roadmap
+   ========================================================================== */
+html.js .roadmap-head {
+  position: absolute;
+  left: var(--m);
+  top: calc(var(--top) + 74px);
+  width: var(--col);
+}
+.roadmap-head .display {
+  margin-bottom: clamp(16px, 2.4vh, 26px);
+}
+html.js .roadmap-panel {
+  position: absolute;
+  left: var(--m);
+  bottom: calc(var(--top) + 8px);
+  width: min(var(--col), 560px);
+}
+.term-bar {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  border-top: 1px solid var(--line);
+  margin-bottom: 18px;
+}
+.term-btn {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 10px 0 2px;
+  text-align: left;
+  color: var(--ink-3);
+  transition: color 0.3s;
+}
+.term-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 4px;
+  top: -1px;
+  height: 1px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.6s var(--e-out);
+}
+.term-btn:hover,
+.term-btn:focus-visible {
+  color: var(--ink-2);
+}
+.term-btn[aria-pressed='true'] {
+  color: var(--ink);
+}
+.term-btn[aria-pressed='true']::before {
+  transform: scaleX(1);
+}
+.term-btn-id {
+  font-family: var(--f-display);
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 15px;
+}
+.term-btn-date {
+  font-family: var(--f-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+}
+.term-now {
+  position: absolute;
+  top: -19px;
+  left: 0;
+  font-family: var(--f-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--acc);
+  opacity: 0;
+}
+.term-btn.is-now .term-now {
+  opacity: 1;
+}
+.term-detail {
+  min-height: 12.5em;
+}
+.term-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.term-id {
+  font-family: var(--f-display);
+  font-stretch: 125%;
+  font-weight: 650;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+}
+.term-flag {
+  color: var(--acc);
+}
+.term-dl {
+  display: grid;
+  gap: 10px;
+}
+.term-dl > div {
+  display: grid;
+  grid-template-columns: 7.5em 1fr;
+  gap: 12px;
+}
+.term-dl dt {
+  padding-top: 2px;
+}
+.term-dl dd {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 14px;
+  row-gap: 2px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.term-dl .dd-mono {
+  font-family: var(--f-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+  padding-top: 2px;
+}
+.term-dl .dd-build {
+  display: block;
+}
+
+/* ==========================================================================
+   04 — Builds
+   ========================================================================== */
+html.js .builds-head {
+  position: absolute;
+  left: var(--m);
+  top: calc(var(--top) + 74px);
+}
+/* stacked in one grid cell — no transforms, so the figure caption can sit in the viewport */
+html.js .projects {
+  position: absolute;
+  left: var(--m);
+  top: calc(var(--top) + 110px);
+  bottom: calc(var(--top) + 70px);
+  width: min(var(--col), 600px);
+  display: grid;
+  /* the column never grows to fit a long title: titles fit the column instead */
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+}
+html.js .project {
+  grid-area: 1 / 1;
+}
+.pj-title {
+  font-size: clamp(26px, 2.75vw, 54px);
+}
+.pj-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  margin-bottom: clamp(16px, 2.4vh, 26px);
+  color: var(--ink-2);
+}
+.pj-n {
+  color: var(--ink);
+}
+.pj-status {
+  padding: 4px 8px 3px;
+  border: 1px solid var(--acc-dim);
+  color: var(--acc);
+  border-radius: 2px;
+  line-height: 1;
+}
+.pj-title {
+  margin-bottom: clamp(16px, 2.4vh, 24px);
+}
+.pj-concept {
+  font-size: var(--fs-lede);
+  line-height: 1.5;
+  color: var(--ink);
+  max-width: 30em;
+  margin-bottom: 10px;
+}
+.pj-note {
+  font-size: 14px;
+  color: var(--ink-2);
+  max-width: 32em;
+  margin-bottom: 10px;
+}
+.pj-dl {
+  display: grid;
+  gap: 12px;
+  margin-top: clamp(18px, 2.6vh, 28px);
+}
+.pj-row {
+  display: grid;
+  grid-template-columns: 5.6em 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.pj-row dt {
+  padding-top: 6px;
+}
+.pj-fig {
+  color: var(--ink-3);
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+html.js .pj-fig {
+  position: fixed;
+  right: calc(var(--m) + 44px);
+  bottom: calc(var(--top) + 60px);
+  max-width: 26em;
+  text-align: right;
+}
+.pj-fig .acc {
+  margin-right: 0.6em;
+}
+
+/* project index — eight quiet numerals */
+html.js .pidx {
+  position: absolute;
+  left: var(--m);
+  bottom: calc(var(--top) + 4px);
+}
+.pidx ol {
+  display: flex;
+  gap: 2px;
+}
+.pidx-btn {
+  position: relative;
+  display: block;
+  padding: 12px 10px 8px 0;
+  min-width: 44px;
+  text-align: left;
+  color: var(--ink-3);
+  font-family: var(--f-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.06em;
+  transition: color 0.3s;
+}
+.pidx-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 8px;
+  top: 0;
+  height: 1px;
+  background: var(--line);
+}
+.pidx-btn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 8px;
+  top: 0;
+  height: 1px;
+  background: var(--acc);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.7s var(--e-out);
+}
+.pidx-btn:hover,
+.pidx-btn:focus-visible {
+  color: var(--ink);
+}
+.pidx-btn[aria-current='true'] {
+  color: var(--ink);
+}
+.pidx-btn[aria-current='true']::after {
+  transform: scaleX(1);
+}
+.pidx-btn.is-past::before {
+  background: var(--ink-4);
+}
+.pidx-t {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  white-space: nowrap;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.25s, transform 0.4s var(--e-out);
+  pointer-events: none;
+}
+.pidx-btn:hover .pidx-t,
+.pidx-btn:focus-visible .pidx-t {
+  opacity: 1;
+  transform: none;
+}
+
+/* ==========================================================================
+   05 — Stack
+   ========================================================================== */
+html.js .stack-step {
+  position: absolute;
+  left: var(--m);
+  top: calc(var(--top) + 74px);
+  width: min(40vw, 620px);
+}
+.stack-step .lede.short {
+  max-width: 23em;
+}
+/* plain-text group lists (document modes and upright screens) */
+.grp-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+}
+.grp-name {
+  margin: 0 0 4px;
+  font-family: var(--f-display);
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.grp-note {
+  margin: 0 0 4px;
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  color: var(--ink-3);
+}
+.grp-items {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 2px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.grp-items li:not(:last-child)::after {
+  content: '·';
+  margin: 0 0.55em;
+  color: var(--ink-4);
+}
+.stack-title {
+  margin-bottom: clamp(16px, 2.4vh, 26px);
+}
+.stack-hint {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.stack-hint::before {
+  content: '';
+  width: 22px;
+  height: 9px;
+  border: 1px solid var(--ink-4);
+  border-radius: 999px;
+}
+
+/* ==========================================================================
+   06 — Directions
+   ========================================================================== */
+.panel-directions .display {
+  margin-bottom: clamp(18px, 2.6vh, 28px);
+}
+.dir-story {
+  color: var(--ink);
+  margin-bottom: 16px;
+  max-width: 30em;
+}
+.panel-directions .lede.short {
+  max-width: 23em;
+}
+.dir-story .ar {
+  color: var(--acc);
+  margin: 0 0.25em;
+}
+html.js .panel-directions .col-left {
+  width: min(40vw, 620px);
+  /* hung from the top so the fan's hinge and foundation own the lower left */
+  top: calc(var(--top) + 74px);
+  transform: none;
+}
+.acc-line .ln-i {
+  color: var(--acc);
+}
+
+/* ==========================================================================
+   07 — Contact
+   ========================================================================== */
+html.js .contact-inner {
+  position: absolute;
+  left: var(--m);
+  right: var(--m);
+  bottom: calc(var(--top) + 86px);
+}
+.contact-title {
+  margin-bottom: clamp(22px, 3.6vh, 40px);
+}
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.contact-mail {
+  font-family: var(--f-display);
+  font-stretch: 112%;
+  font-weight: 450;
+  font-size: clamp(22px, 2.6vw, 44px);
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  background-image: linear-gradient(var(--acc), var(--acc));
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  padding-bottom: 6px;
+  transition: background-size 0.6s var(--e-out), color 0.3s;
+}
+.contact-mail:hover,
+.contact-mail:focus-visible {
+  color: #fff;
+}
+.btn-copy {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-2);
+  transition: color 0.3s, border-color 0.3s;
+}
+.btn-copy:hover,
+.btn-copy:focus-visible {
+  color: var(--ink);
+  border-color: var(--ink-4);
+}
+.contact-links {
+  display: flex;
+  gap: 22px;
+  margin-top: 18px;
+}
+html.js .contact-foot {
+  position: absolute;
+  left: var(--m);
+  right: calc(var(--m) + 150px);
+  bottom: var(--top);
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  color: var(--ink-2);
+  transition: color 0.3s;
+}
+.btn-ghost:hover,
+.btn-ghost:focus-visible {
+  color: var(--ink);
+}

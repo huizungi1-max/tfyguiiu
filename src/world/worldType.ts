@@ -89,25 +89,27 @@ export class WorldType implements StageSystem {
   private layoutName() {
     const aspect = innerWidth / innerHeight;
     const portrait = aspect < 1 / 1.08;
-    // upright: ~84% of the frame width at the name's depth (portrait hero: 22.5 away, 46° lens)
-    const fs = portrait ? Math.min(285, Math.round(272 * aspect)) : 285;
-    const key = portrait ? fs : -1;
+    // The monolith is a full-height column wider than any letter gap, so a name behind it
+    // loses its middle letters. The name reads in front instead: the dark tower sits behind
+    // the silver wordmark, giving depth without ever hiding a glyph.
+    // Size tracks aspect so the whole word keeps side margins from phone to ultrawide.
+    // on-screen name width ∝ fontSize / aspect, so size tracks aspect to hold ~82% width
+    const fs = portrait ? Math.min(285, Math.round(272 * aspect)) : Math.max(150, Math.min(210, Math.round(107 * aspect)));
+    const key = portrait ? fs : fs + 10000;
     if (key === this.nameKey) return;
     this.nameKey = key;
     const obj = this.nameObj;
     const az = THREE.MathUtils.degToRad(HERO.az);
     const fwd = new THREE.Vector3(Math.sin(az), 0, Math.cos(az));
-    const right = new THREE.Vector3(Math.cos(az), 0, -Math.sin(az));
     obj.removeFromParent();
+    this.nameEl.style.fontSize = `${fs}px`;
     if (portrait) {
-      this.nameEl.style.fontSize = `${fs}px`;
       obj.position.copy(HERO.p).addScaledVector(fwd, 1.4).add(new THREE.Vector3(0, 1.15, 0));
-      this.world.frontScene.add(obj);
     } else {
-      this.nameEl.style.fontSize = '';
-      obj.position.copy(HERO.p).addScaledVector(fwd, -6.6).add(new THREE.Vector3(0, -0.15, 0)).addScaledVector(right, 1.05);
-      this.world.backScene.add(obj);
+      // just in front of the monolith, centred on it
+      obj.position.copy(HERO.p).addScaledVector(fwd, 2.6).add(new THREE.Vector3(0, -0.05, 0));
     }
+    this.world.frontScene.add(obj);
   }
 
   /* — term lettering on each tread ——————————————————————————————— */

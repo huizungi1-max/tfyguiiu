@@ -141,12 +141,16 @@ function stair(active = -1): Formation {
  */
 export const RING = { c: new THREE.Vector3(0, 3.1, -11.6), r: 11.2, step: 360 / N };
 
+export const RING_CARD = { w: 0.72, h: 1.1 }; // narrow the wide plate into a card that fits the frame
+
 function ring(active: number): Formation {
   const plates: PlatePose[] = [];
   for (let i = 0; i < N; i++) {
     const th = deg(i * RING.step);
-    // rx 90° stands the plate up with its top face outward; ry turns it to its slot
-    plates.push(pose(RING.r * Math.sin(th), 0, RING.r * Math.cos(th), deg(90), th, 0));
+    // rx 90° stands the plate up with its top face outward; ry turns it to its slot.
+    // The plate is a wide slab: scale its width (X) down and lift its depth (Z→screen height)
+    // so each card reads as an upright panel that sits inside the viewport.
+    plates.push(pose(RING.r * Math.sin(th), 0, RING.r * Math.cos(th), deg(90), th, 0, RING_CARD.w, 1, RING_CARD.h));
   }
   return { group: groupAt(RING.c.x, RING.c.y, RING.c.z, -active * RING.step), plates };
 }

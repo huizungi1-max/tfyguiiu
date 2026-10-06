@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { World } from './world';
-import { presence, type ChangeEvent, type StageState, type StageSystem } from './director';
+import type { ChangeEvent, StageState, StageSystem } from './director';
 import { clamp, damp, lerp, rand, smoothstep } from '../core/math';
 import { env } from '../core/env';
 import { Glow } from './glow';
@@ -531,6 +531,8 @@ export class Eagle implements StageSystem {
     this.root.add(this.bank);
     this.bank.add(this.bird);
     this.root.visible = false;
+    // the origin is the eagle's sky from the very first frame (no monolith before the loop runs)
+    world.plates.setVisibility(1 - this.sky);
 
     this.buildBody();
     this.buildHead();
@@ -898,10 +900,12 @@ export class Eagle implements StageSystem {
     const a = s.from.kind === 'origin' ? 1 : 0;
     const b = s.to.kind === 'origin' ? 1 : 0;
 
-    // The origin is the eagle's sky: the plates step aside there, and return everywhere else.
+    // The origin is the eagle's sky: the plates are never seen there — not even for a moment as the
+    // standing monolith they form for it. Leaving, they stay hidden until they have mostly turned
+    // into the next composition; arriving, they are gone before they start to gather into it.
     let target: number;
     if (s.t >= 1 || a === b) target = s.t >= 1 ? b : a;
-    else target = a * presence(true, false, s.t, 0.3) + b * presence(false, true, s.t, 0.4, 0.7, 1);
+    else target = a * (1 - smoothstep(0.5, 0.85, s.t)) + b * smoothstep(0, 0.22, s.t);
     this.sky = s.reduced ? target : damp(this.sky, target, 6, s.dt);
     if (s.t >= 1 && b === 1) this.sky = 1;
     this.world.plates.setVisibility(a || b ? 1 - clamp(this.sky) : 1);

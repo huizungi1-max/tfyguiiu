@@ -129,6 +129,27 @@ check('back on the hero the eagle flies in again', (await idx()) === 0 && (await
 await swipe(0, -170);
 await settle();
 check('hero: a touch swipe hands over too', (await idx()) === 1, `index ${await idx()}`);
+// the plates' standing monolith is never seen from the hero: not while idle, not leaving it
+await page.keyboard.press('ArrowUp');
+await settle();
+await arrived();
+const leaks = await page.evaluate(
+  () =>
+    new Promise((resolve) => {
+      const app = window.__app;
+      const seen = app.world.plates.group.visible ? ['idle'] : [];
+      const tick = () => {
+        const t = app.director.progress;
+        if (app.director.index === 1 && t < 0.45 && app.world.plates.group.visible) seen.push(t.toFixed(2));
+        if (app.director.index === 1 && t >= 0.6) return resolve(seen);
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    }),
+);
+check('hero: no monolith flash, idle or leaving', leaks.length === 0, leaks.slice(0, 6).join(','));
+await settle();
 await page.keyboard.press('Home');
 await settle();
 

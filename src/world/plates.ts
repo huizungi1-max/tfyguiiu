@@ -46,7 +46,6 @@ export class Plates {
   private accentTarget = new Float32Array(PLATE.N);
   private mode: StripMode = 'long';
   readonly material: THREE.MeshPhysicalMaterial;
-  private accentMaterial!: THREE.MeshPhysicalMaterial;
 
   constructor(opts: { segments: number; brushed: THREE.Texture; shadows: boolean }) {
     const geo = new RoundedBoxGeometry(PLATE.W, PLATE.T, PLATE.D, opts.segments, 0.035);
@@ -61,14 +60,6 @@ export class Plates {
       clearcoatRoughness: 0.14,
       envMapIntensity: 1.0,
     });
-
-    // An orange skin, applied to a chosen slab only where a composition asks for it.
-    const accentMat = this.material.clone();
-    accentMat.color = new THREE.Color('#ff5b24');
-    accentMat.emissive = new THREE.Color('#ff5b24');
-    accentMat.emissiveIntensity = 0.35;
-    accentMat.roughness = 0.3;
-    this.accentMaterial = accentMat;
 
     const longGeo = new THREE.BoxGeometry(PLATE.W * 0.97, 0.024, 0.012);
     const shortGeo = new THREE.BoxGeometry(0.012, 0.024, PLATE.D * 0.95);
@@ -102,13 +93,6 @@ export class Plates {
     this.mode = mode;
   }
 
-  /** Give one slab the orange skin (−1 clears). Used by the origin monolith. */
-  setSkin(index: number) {
-    for (let i = 0; i < this.meshes.length; i++) {
-      this.meshes[i].material = i === index ? this.accentMaterial : this.material;
-    }
-  }
-
   /** Dark: anodised graphite under lacquer. Light: pale satin aluminium that reads on paper. */
   setTheme(light: boolean) {
     const m = this.material;
@@ -120,17 +104,14 @@ export class Plates {
     m.needsUpdate = true;
   }
 
-  /** Fade the whole monolith/plate structure (0..1) — the hero sculpture replaces it on origin. */
+  /** Fade the whole plate structure (0..1) — the hero's eagle has the origin's sky to itself. */
   setVisibility(v: number) {
     // Metal with clearcoat fades muddily, so cross the threshold with opacity then cut cleanly.
     const show = v > 0.04;
     this.group.visible = show;
     if (!show) return;
-    const faded = v < 0.999;
-    this.material.transparent = faded;
+    this.material.transparent = v < 0.999;
     this.material.opacity = v;
-    this.accentMaterial.transparent = faded;
-    this.accentMaterial.opacity = v;
   }
 
   /** Current transforms as a formation (used to start transitions from wherever we are). */

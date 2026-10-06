@@ -139,7 +139,7 @@ function stair(active = -1): Formation {
  * plates never move relative to the ring: changing card only rotates the ring's
  * group, so a transition is a true revolution about its centre (never a chord).
  */
-export const RING = { c: new THREE.Vector3(0, 3.1, -11.6), r: 7.6, step: 360 / N };
+export const RING = { c: new THREE.Vector3(0, 3.1, -11.6), r: 9.2, step: 360 / N };
 
 function ring(active: number): Formation {
   const plates: PlatePose[] = [];

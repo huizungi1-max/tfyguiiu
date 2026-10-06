@@ -53,14 +53,23 @@ html.intro .wt-ch {
 /* — Skill-domain cards (on the orbit) ——————————————————————————————— */
 /* 100 CSS px = 1 world unit: the card face is 6.4 × 4.0 units, the type sits inside it. */
 .wt-card {
-  width: 540px;
+  box-sizing: border-box;
+  width: 600px;
+  height: 468px;
+  padding: 52px 54px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   white-space: normal;
   color: var(--ink);
+  /* a clear outline so each panel reads as a distinct, taller card */
+  border: 1.5px solid rgba(236, 234, 228, 0.24);
+  background: rgba(8, 8, 10, 0.5);
 }
 .wt-card-k {
   display: flex;
   gap: 10px;
-  margin: 0 0 26px;
+  margin: 0 0 22px;
   font-family: var(--f-mono);
   font-size: 17px;
   letter-spacing: 0.12em;

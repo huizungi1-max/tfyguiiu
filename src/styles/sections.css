@@ -200,7 +200,7 @@ html:not(.js) .origin-name {
 }
 .pl-row {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 4px;
 }
 .pl-txt {

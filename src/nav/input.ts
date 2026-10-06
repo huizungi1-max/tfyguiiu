@@ -25,7 +25,15 @@ export interface InputHooks {
   sideways(): boolean;
   /** Live horizontal drag offset in px (0 when released / fired). */
   drag?(dx: number): void;
+  /**
+   * Continuous vertical scroll, in viewport heights (+ = down). Returning true consumes it:
+   * the hero uses this so scrolling scrubs the eagle's flight instead of stepping.
+   */
+  scrub?(dy: number): boolean;
 }
+
+/** Wheel pixels that scrub one full viewport of hero flight. */
+const SCRUB_PX = 950;
 
 const LINE = 16;
 const WHEEL_THRESHOLD = 34;
@@ -47,7 +55,7 @@ export class Input {
   private lastAbs = 0;
   private lastFire = 0;
   private queued: Pending | null = null;
-  private touch: { x: number; y: number; t: number; fired: boolean } | null = null;
+  private touch: { x: number; y: number; ly: number; t: number; fired: boolean; scrubbed: boolean } | null = null;
   private pointer: { id: number; x: number; y: number; fired: boolean } | null = null;
 
   constructor(private hooks: InputHooks) {
@@ -109,6 +117,13 @@ export class Input {
       this.acc = 0;
     }
     this.lastAbs = ad;
+    // The hero scrubs continuously; the rest of the inertial tail after it hands over is absorbed.
+    if (axis === 'y' && this.hooks.scrub?.(dy / SCRUB_PX)) {
+      this.fresh = false;
+      this.acc = 0;
+      this.lastFire = now;
+      return;
+    }
     if (!this.fresh) return;
 
     if (this.acc !== 0 && (axis !== this.accAxis || Math.sign(d) !== Math.sign(this.acc))) this.acc = 0;
@@ -129,7 +144,7 @@ export class Input {
       return;
     }
     const t = e.touches[0];
-    this.touch = { x: t.clientX, y: t.clientY, t: performance.now(), fired: false };
+    this.touch = { x: t.clientX, y: t.clientY, ly: t.clientY, t: performance.now(), fired: false, scrubbed: false };
   };
 
   private onTouchMove = (e: TouchEvent) => {
@@ -141,6 +156,14 @@ export class Input {
     const t = e.touches[0];
     const dx = t.clientX - s.x;
     const dy = t.clientY - s.y;
+    // On the hero a vertical drag scrubs the flight directly (finger up = fly on).
+    const step = s.ly - t.clientY;
+    s.ly = t.clientY;
+    if (Math.abs(dy) > Math.abs(dx) && this.hooks.scrub?.(step / (window.innerHeight * 0.8))) {
+      s.scrubbed = true;
+      return;
+    }
+    if (s.scrubbed) return;
     // The two axes are kept clearly apart: a gesture must be decisively one or the other.
     const vertical = Math.abs(dy) > 44 && Math.abs(dy) > Math.abs(dx) * 1.15;
     const horizontal = Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy) * 1.4;
@@ -163,6 +186,11 @@ export class Input {
     const dx = t.clientX - s.x;
     const dy = t.clientY - s.y;
     const dt = performance.now() - s.t;
+    if (s.scrubbed) {
+      // a quick flick on the hero carries the flight on a little further
+      if (dt < 320 && Math.abs(dy) > 36) this.hooks.scrub?.((-dy / (window.innerHeight * 0.8)) * 0.6);
+      return;
+    }
     // a short, quick flick
     if (dt < 260 && Math.max(Math.abs(dx), Math.abs(dy)) > 26) {
       if (Math.abs(dy) >= Math.abs(dx)) this.fire(dy < 0 ? 1 : -1, 'y', 'touch');

@@ -8,7 +8,7 @@ import { compose } from './world/compositions';
 import { Glyphs } from './world/glyphs';
 import { WorldType } from './world/worldType';
 import { Labels } from './world/labels';
-import { Orbit } from './world/orbit';
+import { Eagle } from './world/eagle';
 import { pose, PLATE, type Formation } from './world/plates';
 import { shot } from './world/rig';
 import { steps, stepFromHash, firstStepOfSection, isHorizontal } from './nav/steps';
@@ -17,6 +17,9 @@ import { sections } from './content/content';
 import { damp } from './core/math';
 import { UI } from './ui/ui';
 import { Sound } from './audio/sound';
+
+/** How far the scrubbed flight goes before the next section takes over. */
+const HERO_COMMIT = 0.6;
 
 declare global {
   interface Window {
@@ -52,7 +55,7 @@ export class App {
   glyphs!: Glyphs;
   type!: WorldType;
   labels!: Labels;
-  orbit!: Orbit;
+  eagle!: Eagle;
   input!: Input;
   sound = new Sound();
   private lastSub: Record<number, number> = {};
@@ -75,15 +78,18 @@ export class App {
     this.glyphs = new Glyphs(this.world.plates);
     this.type = new WorldType(this.world);
     this.labels = new Labels(this.world, this.glyphs);
-    this.orbit = new Orbit(this.world);
+    this.eagle = new Eagle(this.world);
     this.director.add(this.glyphs);
     this.director.add(this.type);
     this.director.add(this.labels);
-    this.director.add(this.orbit);
+    this.director.add(this.eagle);
+    // debug captures: hold the eagle at a point of its flight (?fly=0.45)
+    if (env.params.has('fly')) this.eagle.scrub = this.eagle.u = Number(env.params.get('fly'));
     this.ui = new UI(this.director, this.world, this.type, this.sound);
 
     // Remember where each horizontal section was left, so coming back resumes there.
     this.director.onChange((e) => (this.lastSub[e.to.section] = e.to.sub));
+    this.director.onChange((e) => this.eagle.onChange(e));
     this.ui.onNav = (axis, dir) => this.move(axis, dir);
     this.ui.onTheme = (light) => this.applyTheme(light, true);
     this.applyTheme(document.documentElement.dataset.theme === 'light', false);
@@ -94,6 +100,7 @@ export class App {
       progress: () => this.director.progress,
       blocked: () => this.ui.blocked,
       sideways: () => isHorizontal(this.director.step.section),
+      scrub: (d) => this.scrubHero(d),
       drag: (dx) => (this.dragTarget = Math.max(-1, Math.min(1, dx / Math.max(320, window.innerWidth * 0.5)))),
     });
 
@@ -133,7 +140,8 @@ export class App {
       if (kind === 'roadmap' && Math.abs(this.drag) > 1e-4) {
         this.world.plates.group.quaternion.premultiply(yaw.setFromAxisAngle(UP, this.drag * THREE.MathUtils.degToRad(14)));
       }
-      this.world.rig.nudge = kind === 'build' ? -this.drag * THREE.MathUtils.degToRad(5) : 0;
+      // on the hero the camera leans a hair toward the eagle as it crosses
+      this.world.rig.nudge = kind === 'build' ? -this.drag * THREE.MathUtils.degToRad(5) : this.eagle.lean * this.world.rig.parallax;
       this.world.plates.update(dt, time);
       this.world.rig.update(dt, time);
       this.world.render();
@@ -201,7 +209,7 @@ export class App {
     btn?.setAttribute('aria-pressed', String(light));
     btn?.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
     this.world.setTheme(light);
-    this.orbit.setTheme(light);
+    this.eagle.setTheme(light);
     this.glyphs.setTheme(light);
   }
 
@@ -232,6 +240,18 @@ export class App {
     if (!next) return;
     if (next.section !== cur.section && isHorizontal(next.section)) this.director.goTo(this.entry(next.section, dir), { adjacent: true });
     else this.director.goTo(next.index);
+  }
+
+  /**
+   * Scroll on the hero flies the eagle instead of stepping: the flight follows the scroll
+   * both ways, and once it is far enough across, the move to the next section takes over.
+   */
+  private scrubHero(d: number) {
+    if (this.director.step.kind !== 'origin' || env.reducedMotion || this.ui.blocked) return false;
+    const e = this.eagle;
+    e.scrub = Math.max(0, Math.min(1, e.scrub + d));
+    if (e.scrub >= HERO_COMMIT) this.move('y', 1);
+    return true;
   }
 
   /** Where a vertical move lands in a section: resume horizontal ones; enter others from the near end. */

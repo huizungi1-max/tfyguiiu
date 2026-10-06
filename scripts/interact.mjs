@@ -108,6 +108,26 @@ await page.keyboard.press('Home');
 await settle();
 check('Home → origin', (await idx()) === 0);
 
+// hero: scroll scrubs the eagle's flight (both ways) instead of stepping; far enough hands over
+const scrub = () => page.evaluate(() => window.__app.eagle.scrub);
+await wheel(0, 120);
+await wheel(0, 120);
+await page.waitForTimeout(250);
+const s1 = await scrub();
+check('hero: a little scroll flies the eagle in, page stays', (await idx()) === 0 && s1 > 0.2 && s1 < 0.3, `scrub ${s1.toFixed(3)}`);
+await page.waitForTimeout(300);
+await wheel(0, -120);
+await page.waitForTimeout(250);
+const s2 = await scrub();
+check('hero: scrolling back flies it back', (await idx()) === 0 && s2 < s1, `scrub ${s2.toFixed(3)}`);
+await page.waitForTimeout(300);
+for (let i = 0; i < 6; i++) await wheel(0, 120);
+await settle();
+check('hero: scrolling on hands over to Capabilities', (await idx()) === 1, `index ${await idx()}`);
+await page.keyboard.press('ArrowUp');
+await settle();
+check('back on the hero the sky is empty again', (await idx()) === 0 && (await scrub()) === 0);
+
 // menu: open, jump to a section, closes
 await page.click('[data-menu-open]');
 await page.waitForTimeout(500);

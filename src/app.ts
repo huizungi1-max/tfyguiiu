@@ -8,6 +8,7 @@ import { compose } from './world/compositions';
 import { Glyphs } from './world/glyphs';
 import { WorldType } from './world/worldType';
 import { Labels } from './world/labels';
+import { Orbit } from './world/orbit';
 import { pose, PLATE, type Formation } from './world/plates';
 import { shot } from './world/rig';
 import { steps, stepFromHash, firstStepOfSection, isHorizontal } from './nav/steps';
@@ -51,6 +52,7 @@ export class App {
   glyphs!: Glyphs;
   type!: WorldType;
   labels!: Labels;
+  orbit!: Orbit;
   input!: Input;
   sound = new Sound();
   private lastSub: Record<number, number> = {};
@@ -73,9 +75,11 @@ export class App {
     this.glyphs = new Glyphs(this.world.plates);
     this.type = new WorldType(this.world);
     this.labels = new Labels(this.world, this.glyphs);
+    this.orbit = new Orbit(this.world);
     this.director.add(this.glyphs);
     this.director.add(this.type);
     this.director.add(this.labels);
+    this.director.add(this.orbit);
     this.ui = new UI(this.director, this.world, this.type, this.sound);
 
     // Remember where each horizontal section was left, so coming back resumes there.

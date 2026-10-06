@@ -109,6 +109,19 @@ export class Plates {
     }
   }
 
+  /** Fade the whole monolith/plate structure (0..1) — the hero sculpture replaces it on origin. */
+  setVisibility(v: number) {
+    // Metal with clearcoat fades muddily, so cross the threshold with opacity then cut cleanly.
+    const show = v > 0.04;
+    this.group.visible = show;
+    if (!show) return;
+    const faded = v < 0.999;
+    this.material.transparent = faded;
+    this.material.opacity = v;
+    this.accentMaterial.transparent = faded;
+    this.accentMaterial.opacity = v;
+  }
+
   /** Current transforms as a formation (used to start transitions from wherever we are). */
   snapshot(): Formation {
     return {

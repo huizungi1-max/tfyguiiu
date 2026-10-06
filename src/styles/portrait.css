@@ -90,48 +90,15 @@ html.js.portrait .roadmap-head .lede {
   font-size: 13px;
   max-width: 30em;
 }
-html.js.portrait .roadmap-panel {
-  right: var(--m);
-  width: auto;
-  bottom: var(--copy-bottom);
+html.js.portrait .domain-list {
+  margin-top: 10px;
+  padding-top: 12px;
+  gap: 5px 6px;
+  max-width: 30em;
 }
-html.js.portrait .term-bar {
-  margin-bottom: 12px;
-}
-html.js.portrait .term-btn {
-  padding: 8px 0 4px;
-  min-height: 34px;
-}
-html.js.portrait .term-btn-id {
-  font-size: 13px;
-}
-html.js.portrait .term-btn-date {
-  display: none;
-}
-html.js.portrait .term-detail {
-  min-height: 0;
-}
-html.js.portrait .term-head {
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-  row-gap: 2px;
-}
-html.js.portrait .term-id {
-  font-size: 20px;
-}
-html.js.portrait .term-dl {
-  gap: 7px;
-}
-html.js.portrait .term-dl > div {
-  grid-template-columns: 5.4em 1fr;
-  gap: 8px;
-}
-html.js.portrait .term-dl dd {
-  font-size: 12.5px;
-  column-gap: 10px;
-}
-html.js.portrait .term-dl .dd-mono {
-  font-size: 10.5px;
+html.js.portrait .domain-list li {
+  font-size: 9.5px;
+  padding: 4px 8px;
 }
 
 /* — 04 builds ——————————————————————————————————————————————————————— */

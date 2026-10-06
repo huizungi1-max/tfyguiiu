@@ -152,8 +152,7 @@ html:not(.js) .grain {
   display: none;
 }
 html:not(.js) .project[hidden],
-html:not(.js) .stack-step[hidden],
-html:not(.js) .term[hidden] {
+html:not(.js) .stack-step[hidden] {
   display: block !important;
 }
 html:not(.js) .project {
@@ -166,8 +165,7 @@ html:not(.js) .ln {
 html:not(.js) .col-left {
   width: auto;
 }
-html:not(.js) .chrome-right,
-html:not(.js) .term-bar {
+html:not(.js) .chrome-right {
   display: none;
 }
 html:not(.js) .origin-foot {

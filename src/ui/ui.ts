@@ -3,7 +3,7 @@ import type { WorldType } from '../world/worldType';
 import type { World } from '../world/world';
 import type { Sound } from '../audio/sound';
 import { steps, firstStepOfSection, type Step } from '../nav/steps';
-import { sections, projects, terms } from '../content/content';
+import { sections, projects } from '../content/content';
 import { fitDisplay } from './fit';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -25,7 +25,6 @@ export class UI {
   private menuOpen = false;
   private lastFocus: HTMLElement | null = null;
   private announce = document.querySelector('[data-announce]') as HTMLElement;
-  private selectedTerm = 0;
   private hintHidden = false;
   /** The parts currently on screen — refitted when the viewport or fonts change. */
   private live: Scope = [];
@@ -33,7 +32,7 @@ export class UI {
   constructor(
     private director: Director,
     private world: World,
-    private type: WorldType,
+    _type: WorldType,
     private sound: Sound,
   ) {
     this.panels = sections.map((s) => document.getElementById(s.id) as HTMLElement);
@@ -43,7 +42,6 @@ export class UI {
       p.setAttribute('aria-hidden', 'true');
     });
     this.bind();
-    this.setupRoadmap();
     director.onChange((e) => this.onChange(e));
     director.onSettle((s) => this.onSettle(s));
     const y = document.querySelector('[data-year]');
@@ -301,32 +299,12 @@ export class UI {
   }
 
   /* ---------------------------------------------------------------------- */
-  /* Roadmap                                                                   */
+  /* Capabilities                                                              */
   /* ---------------------------------------------------------------------- */
 
-  private setupRoadmap() {
-    document.querySelectorAll<HTMLElement>('.term-btn').forEach((b) => {
-      const i = Number(b.dataset.term);
-      b.setAttribute('aria-label', `Stage ${terms[i].id}: ${terms[i].stage}`);
-    });
-    this.selectTerm(0, false);
-  }
-
-  selectTerm(i: number, animate = true) {
-    this.selectedTerm = i;
-    document.querySelectorAll<HTMLElement>('.term-btn').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.term) === i)));
-    document.querySelectorAll<HTMLElement>('[data-term-panel]').forEach((p) => {
-      const on = Number(p.dataset.termPanel) === i;
-      p.hidden = !on;
-      if (on && animate) p.animate([{ opacity: 0, transform: 'translate3d(0,8px,0)' }, { opacity: 1, transform: 'none' }], { duration: 520, easing: E_OUT });
-    });
-    this.type.setSelectedTerm(i);
-    if (this.director.step.kind === 'roadmap') this.applyTermAccent();
-  }
-
+  /** The capability climb lights its plates evenly — a steady presence, no selection. */
   private applyTermAccent() {
-    const a = new Array(9).fill(0);
-    a[this.selectedTerm] = 1;
+    const a = new Array(9).fill(0.5);
     this.world.plates.setAccent(a);
   }
 
@@ -337,7 +315,7 @@ export class UI {
   private bind() {
     document.addEventListener('click', (e) => {
       const t = e.target as HTMLElement;
-      const el = t.closest<HTMLElement>('[data-goto-step],[data-goto-section],[data-goto-project],[data-next],[data-term],[data-copy],[data-sound],[data-menu-open],[data-menu-close]');
+      const el = t.closest<HTMLElement>('[data-goto-step],[data-goto-section],[data-goto-project],[data-next],[data-copy],[data-sound],[data-menu-open],[data-menu-close]');
       if (!el) {
         if (this.menuOpen && t === this.menu) this.closeMenu();
         return;
@@ -353,8 +331,6 @@ export class UI {
       } else if (el.dataset.next !== undefined) {
         const i = this.director.index;
         this.director.goTo(i + 1 < steps.length ? i + 1 : 0);
-      } else if (el.dataset.term !== undefined) {
-        this.selectTerm(Number(el.dataset.term));
       } else if (el.dataset.copy !== undefined) {
         void this.copy(el);
       } else if (el.dataset.sound !== undefined) {

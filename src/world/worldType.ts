@@ -48,7 +48,6 @@ const FLAT = onPlate(V(1, 0, 0), V(0, 0, -1));
 
 export class WorldType implements StageSystem {
   private items: Item[] = [];
-  private treadEls: HTMLElement[] = [];
   nameEl!: HTMLElement;
 
   constructor(private world: World) {
@@ -114,27 +113,22 @@ export class WorldType implements StageSystem {
     this.world.frontScene.add(obj);
   }
 
-  /* — stage lettering on each tread ——————————————————————————————— */
+  /* — domain lettering on each plate of the capability climb ——————————— */
   private buildTreads() {
     terms.forEach((term, i) => {
       const { obj, el } = make(
-        `<span class="wt-t-id">${term.id}</span><span class="wt-t-date">${typo(term.stage)}</span>`,
+        `<span class="wt-t-domain">${typo(term.domain)}</span>`,
         'wt-tread',
       );
       obj.quaternion.copy(FLAT);
       obj.position.set(-PLATE.W / 2 + 1.25, PLATE.T / 2 + 0.004, 0.55);
       this.world.frontProxies[i].add(obj);
-      this.treadEls.push(el);
       this.add(obj, el, (s) => {
         if (s.kind === 'roadmap') return 1;
         if (s.kind === 'build') return s.sub === i ? 0 : i > s.sub ? 0.42 : 0;
         return 0;
       });
     });
-  }
-
-  setSelectedTerm(i: number) {
-    this.treadEls.forEach((el, k) => el.classList.toggle('is-sel', k === i));
   }
 
   /* — capability floor plan —————————————————————————————————————— */

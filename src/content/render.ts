@@ -83,37 +83,19 @@ function position() {
 }
 
 function roadmap() {
-  const buttons = terms
-    .map(
-      (term, i) =>
-        `<button class="term-btn" type="button" data-term="${i}" aria-controls="term-detail" aria-pressed="false"><span class="term-btn-id">${term.id}</span><span class="term-btn-date">${t(term.stage)}</span></button>`,
-    )
-    .join('');
-  const details = terms
-    .map(
-      (term, i) => `
-    <div class="term" data-term-panel="${i}" ${i === 0 ? '' : 'hidden'}>
-      <p class="term-head"><span class="term-id">${term.id}</span><span class="mono">${t(term.stage)}</span></p>
-      <dl class="term-dl">
-        <div><dt class="mono dim">${t(term.domainsLabel ?? 'Domains')}</dt><dd class="dd-mono">${term.domains.map((a) => `<span>${t(a)}</span>`).join('')}</dd></div>
-        <div><dt class="mono dim">${term.buildRef !== undefined ? 'Project' : 'Groundwork'}</dt><dd class="dd-build">${term.buildRef !== undefined ? `<span class="mono acc">${projects[term.buildRef].n}</span> ` : ''}${t(term.build)}</dd></div>
-      </dl>
-    </div>`,
-    )
-    .join('');
+  // The nine plates rise through the engineering domains the profile spans.
+  // This is a capability statement, not a timeline — no stages, dates or steps.
+  const domainList = terms.map((term) => `<li>${t(term.domain)}</li>`).join('');
   return `
 <section id="roadmap" class="panel panel-roadmap" data-section="2" aria-labelledby="roadmap-title">
   <div class="roadmap-head">
-    ${kicker(2, 'Progression')}
+    ${kicker(2, 'Capabilities')}
     <h2 id="roadmap-title" class="display lg">
-      <span class="sr-only">Foundations to integration. One system.</span>
-      <span aria-hidden="true">${line('Foundations')}${line('to integration.')}${line('One system.')}</span>
+      <span class="sr-only">Across the whole stack.</span>
+      <span aria-hidden="true">${line('Across the')}${line('whole stack.')}</span>
     </h2>
-    <p class="lede short" data-a="rise">An engineering progression — each stage builds on the last, pairing knowledge domains with a project of increasing scope. A technical ladder, not finished work.</p>
-  </div>
-  <div class="roadmap-panel" data-a="rise">
-    <div class="term-bar" role="group" aria-label="Select a stage">${buttons}</div>
-    <div id="term-detail" class="term-detail" aria-live="polite">${details}</div>
+    <p class="lede short" data-a="rise">From firmware on the metal to RTL and verification — the engineering domains this profile works across, read as one continuous climb.</p>
+    <ul class="domain-list mono" aria-label="Engineering domains" data-a="rise">${domainList}</ul>
   </div>
 </section>`;
 }
@@ -129,10 +111,10 @@ function project(p: Project, i: number) {
   const evidence = p.evidence?.length
     ? `<div class="pj-row"><dt class="mono dim">Evidence</dt><dd>${p.evidence.map((e) => `<a class="link" href="${esc(e.href)}" target="_blank" rel="noopener">${t(e.label)}</a>`).join(' ')}</dd></div>`
     : '';
-  const statusLabel = p.status === 'complete' ? 'Complete' : p.status === 'in-progress' ? 'In progress' : 'Planned';
+  const statusLabel = p.status === 'complete' ? 'Complete' : p.status === 'in-progress' ? 'In progress' : 'Project';
   return `
   <article class="project" data-project="${i}" aria-labelledby="pj-${p.n}-title" ${i === 0 ? '' : 'hidden'}>
-    <p class="pj-meta mono" data-a="fade"><span class="pj-n">Project ${p.n}<span class="dim"> / 08</span></span><span class="pj-term">${t(p.stage)}</span><span class="pj-status" data-status="${p.status}">${statusLabel}</span></p>
+    <p class="pj-meta mono" data-a="fade"><span class="pj-n">Project ${p.n}<span class="dim"> / 08</span></span><span class="pj-term">${t(p.domain)}</span><span class="pj-status" data-status="${p.status}">${statusLabel}</span></p>
     <h3 id="pj-${p.n}-title" class="display md pj-title">
       <span class="sr-only">${t(p.title)}</span>
       <span aria-hidden="true">${p.titleLines.map((l) => line(t(l))).join('')}</span>
@@ -160,7 +142,7 @@ function builds() {
 <section id="builds" class="panel panel-builds" data-section="3" aria-labelledby="builds-title">
   <div class="builds-head">
     ${kicker(3, 'Projects')}
-    <h2 id="builds-title" class="sr-only">Projects — eight-stage engineering progression</h2>
+    <h2 id="builds-title" class="sr-only">Projects — eight engineering projects across embedded, digital hardware and FPGA/RTL</h2>
   </div>
   <div class="projects">${projects.map(project).join('')}</div>
   <nav class="pidx" aria-label="Project index"><ol>${index}</ol></nav>
@@ -212,11 +194,11 @@ function directions() {
   <div class="col col-left">
     ${kicker(5, 'Directions')}
     <h2 id="directions-title" class="display lg">
-      <span class="sr-only">Foundation. Depth. Evidence.</span>
-      <span aria-hidden="true">${line('Foundation.')}${line('Depth.')}${line('Evidence.', 'acc-line')}</span>
+      <span class="sr-only">Foundation. Depth. Focus.</span>
+      <span aria-hidden="true">${line('Foundation.')}${line('Depth.')}${line('Focus.', 'acc-line')}</span>
     </h2>
-    <p class="dir-story mono" data-a="fade">${t('Broad systems foundation → increasing depth → evidence-driven specialization')}</p>
-    <p class="lede short" data-a="rise">Six directions one foundation can open into — possible lanes, not promised outcomes. The builds produce the evidence; the evidence decides where depth goes. The centre of gravity stays fixed: digital hardware and embedded firmware.</p>
+    <p class="dir-story mono" data-a="fade">${t('Broad systems foundation → engineering depth → specialised focus')}</p>
+    <p class="lede short" data-a="rise">Six engineering directions this profile works across — from firmware and FPGA/RTL to verification and hardware. The centre of gravity stays fixed: digital hardware and embedded firmware.</p>
   </div>
   <div class="sr-only">${fams}</div>
 </section>`;

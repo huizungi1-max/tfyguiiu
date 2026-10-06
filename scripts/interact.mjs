@@ -83,16 +83,13 @@ await page.click('[data-menu-open]');
 await page.waitForTimeout(400);
 await page.click('.menu-btn[data-goto-section="2"]');
 await settle();
-check('menu → roadmap', (await idx()) === 2);
+check('menu → capabilities', (await idx()) === 2);
 
-// term selection updates the detail panel
-await page.click('.term-btn[data-term="4"]');
-await page.waitForTimeout(400);
-const termOk = await page.evaluate(() => {
-  const vis = [...document.querySelectorAll('[data-term-panel]')].filter((p) => !p.hidden).map((p) => p.dataset.termPanel);
-  return vis.length === 1 && vis[0] === '4';
-});
-check('term T5 selected shows its detail', termOk);
+// capabilities is a statement, not a browsable roadmap — no term/stage selector
+const noTermUi = await page.evaluate(
+  () => document.querySelectorAll('.term-btn, [data-term], [data-term-panel]').length === 0,
+);
+check('capabilities has no term/stage selector', noTermUi);
 
 // focus lands inside the active panel when tabbing
 await page.keyboard.press('Tab');
@@ -101,13 +98,6 @@ const focusInPanel = await page.evaluate(() => {
   return !!a && (a.closest('.panel.is-active') !== null || a.closest('.chrome') !== null || a.classList.contains('skip'));
 });
 check('Tab focus is on a live control', focusInPanel);
-
-// sound toggle
-await page.click('[data-sound]');
-await page.waitForTimeout(300);
-const pressed = await page.evaluate(() => document.querySelector('[data-sound]').getAttribute('aria-pressed'));
-check('sound toggles on', pressed === 'true', `aria-pressed=${pressed}`);
-await page.click('[data-sound]');
 
 // project index jumps to a build
 await page.keyboard.press('ArrowDown');

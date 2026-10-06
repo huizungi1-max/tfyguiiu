@@ -1,6 +1,6 @@
 # Kaushal — Portfolio
 
-Cinematic 3D engineering portfolio: Digital Hardware / FPGA-RTL + Embedded Firmware.
+Cinematic 3D engineering portfolio: Embedded Systems + Digital Hardware / FPGA-RTL.
 Vite + TypeScript + Three.js, no UI framework.
 
 ## Run

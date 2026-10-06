@@ -66,6 +66,8 @@ export class CameraRig {
   private h = 1;
   parallax = 1;
   drift = 1;
+  /** Live sideways pull while a drag is in progress (rad, already damped by the caller). */
+  nudge = 0;
 
   constructor(initial: Shot) {
     this.camera = new THREE.PerspectiveCamera(initial.fov, 1, 0.1, 400);
@@ -147,7 +149,7 @@ export class CameraRig {
     const py = this.pointerSmoothed.y * this.parallax;
     const d = this.drift;
     // Idle breath: a slow, barely-there sway so a still frame is not dead — not a shake.
-    const az = o.az + px * 0.05 + d * 0.005 * Math.sin(time * 0.08);
+    const az = o.az + px * 0.05 + this.nudge + d * 0.005 * Math.sin(time * 0.08);
     const el = o.el - py * 0.032 + d * 0.0035 * Math.sin(time * 0.11 + 1.3);
     const cosEl = Math.cos(el);
     this.tgt.copy(o.target);

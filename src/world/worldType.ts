@@ -2,10 +2,10 @@ import * as THREE from 'three';
 import { CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 import type { World } from './world';
 import { PLATE } from './plates';
-import { HERO, PLAN_TOP } from './compositions';
+import { HERO, PLAN_TOP, ringDist } from './compositions';
 import { presence, type StageState, type StageSystem } from './director';
 import type { Step } from '../nav/steps';
-import { groups, terms, currentTermIndex } from '../content/content';
+import { groups, domains } from '../content/content';
 import { t as typo } from '../content/typo';
 
 /**
@@ -48,12 +48,11 @@ const FLAT = onPlate(V(1, 0, 0), V(0, 0, -1));
 
 export class WorldType implements StageSystem {
   private items: Item[] = [];
-  private treadEls: HTMLElement[] = [];
   nameEl!: HTMLElement;
 
   constructor(private world: World) {
     this.buildName();
-    this.buildTreads();
+    this.buildCards();
     this.buildPlan();
   }
 
@@ -114,28 +113,28 @@ export class WorldType implements StageSystem {
     this.world.frontScene.add(obj);
   }
 
-  /* — term lettering on each tread ——————————————————————————————— */
-  private buildTreads() {
-    const now = currentTermIndex();
-    terms.forEach((term, i) => {
+  /* — skill-domain cards on the orbit ———————————————————————————————— */
+  private buildCards() {
+    const total = String(domains.length).padStart(2, '0');
+    domains.forEach((d, i) => {
       const { obj, el } = make(
-        `<span class="wt-t-id">${term.id}</span><span class="wt-t-date">${typo(term.date)}${i === now ? '<b> · now</b>' : ''}</span>`,
-        `wt-tread${i === now ? ' is-now' : ''}`,
+        `<p class="wt-card-k"><span class="wt-card-n">${String(i + 1).padStart(2, '0')}</span><span class="wt-card-of">/ ${total}</span></p>
+         <h4 class="wt-card-name">${d.nameLines.map(typo).join('<br>')}</h4>
+         <span class="wt-card-rule"></span>
+         <p class="wt-card-skills">${d.skills.map(typo).join('<i> · </i>')}</p>`,
+        'wt-card',
       );
       obj.quaternion.copy(FLAT);
-      obj.position.set(-PLATE.W / 2 + 1.25, PLATE.T / 2 + 0.004, 0.55);
+      obj.position.set(0, PLATE.T / 2 + 0.004, 0);
       this.world.frontProxies[i].add(obj);
-      this.treadEls.push(el);
+      // The front card reads in full; its two neighbours stay faintly lettered for context.
+      // Cards further round are edge-on or behind and stay blank.
       this.add(obj, el, (s) => {
-        if (s.kind === 'roadmap') return 1;
-        if (s.kind === 'build') return s.sub === i ? 0 : i > s.sub ? 0.42 : 0;
-        return 0;
+        if (s.kind !== 'roadmap') return 0;
+        const k = ringDist(i, s.sub);
+        return k === 0 ? 1 : k === 1 ? 0.3 : 0;
       });
     });
-  }
-
-  setSelectedTerm(i: number) {
-    this.treadEls.forEach((el, k) => el.classList.toggle('is-sel', k === i));
   }
 
   /* — capability floor plan —————————————————————————————————————— */

@@ -1,4 +1,4 @@
-// Interaction smoke test — keyboard, wheel, touch-free controls, menu, term selection, sound.
+// Interaction smoke test — keyboard, wheel, touch, drag, the horizontal/vertical gesture rule, menu.
 //   node scripts/interact.mjs [--dist]
 import { chromium } from 'playwright';
 import { createServer, preview } from 'vite';
@@ -54,20 +54,56 @@ await page.evaluate(() => {
 await settle();
 await page.waitForTimeout(400);
 check('one trackpad flick (75 events) → one step', (await idx()) === 2, `index ${await idx()}`);
-// a mouse wheel notch (single event of 100) → one step
-await page.evaluate(() => window.dispatchEvent(new WheelEvent('wheel', { deltaY: 100, cancelable: true, bubbles: true })));
+// Steps: 0 origin · 1 capabilities · 2–10 skill domains · 11–18 projects · 19–20 stack · 21 directions · 22 contact
+const D0 = 2, P0 = 11, S0 = 19, LAST = 22;
+const wheel = (dx, dy) => page.evaluate(([dx, dy]) => window.dispatchEvent(new WheelEvent('wheel', { deltaX: dx, deltaY: dy, cancelable: true, bubbles: true })), [dx, dy]);
+const swipe = (dx, dy) =>
+  page.evaluate(([dx, dy]) => {
+    const mk = (x, y) => new Touch({ identifier: 7, target: document.body, clientX: x, clientY: y });
+    const fire = (type, x, y) => {
+      const t = mk(x, y);
+      window.dispatchEvent(new TouchEvent(type, { touches: type === 'touchend' ? [] : [t], changedTouches: [t], cancelable: true, bubbles: true }));
+    };
+    const x0 = 700, y0 = 450;
+    fire('touchstart', x0, y0);
+    for (let k = 1; k <= 8; k++) fire('touchmove', x0 + (dx * k) / 8, y0 + (dy * k) / 8);
+    fire('touchend', x0 + dx, y0 + dy);
+  }, [dx, dy]);
+
+// a vertical wheel notch inside the orbit leaves it for the next page (never changes card)
+await wheel(0, 100);
 await settle();
-check('one mouse-wheel notch → one step', (await idx()) === 3, `index ${await idx()}`);
-await page.keyboard.press('Home');
+check('orbit: vertical wheel → next page (Projects 01)', (await idx()) === P0, `index ${await idx()}`);
+
+// projects — horizontal changes project, vertical leaves
+await page.keyboard.press('ArrowRight');
 await settle();
+check('projects: ArrowRight → project 02', (await idx()) === P0 + 1, `index ${await idx()}`);
+await wheel(110, 0);
+await settle();
+check('projects: horizontal trackpad swipe → project 03', (await idx()) === P0 + 2, `index ${await idx()}`);
+await swipe(-160, 6);
+await settle();
+check('projects: touch swipe left → project 04', (await idx()) === P0 + 3, `index ${await idx()}`);
+await swipe(150, -4);
+await settle();
+check('projects: touch swipe right → project 03', (await idx()) === P0 + 2, `index ${await idx()}`);
+await swipe(4, -170);
+await settle();
+check('projects: touch swipe up (scroll down) → next page, not next project', (await idx()) === S0, `index ${await idx()}`);
+await page.keyboard.press('ArrowUp');
+await settle();
+check('back up into projects resumes project 03', (await idx()) === P0 + 2, `index ${await idx()}`);
 await page.keyboard.press('ArrowDown');
 await settle();
-await page.keyboard.press('ArrowDown');
+check('projects: ArrowDown → next page (Stack)', (await idx()) === S0, `index ${await idx()}`);
+await page.keyboard.press('ArrowRight');
 await settle();
+check('vertical pages ignore sideways keys', (await idx()) === S0, `index ${await idx()}`);
 
 await page.keyboard.press('End');
 await settle();
-check('End → last step', (await idx()) === 14);
+check('End → last step', (await idx()) === LAST);
 await page.keyboard.press('Home');
 await settle();
 check('Home → origin', (await idx()) === 0);
@@ -83,16 +119,33 @@ await page.click('[data-menu-open]');
 await page.waitForTimeout(400);
 await page.click('.menu-btn[data-goto-section="2"]');
 await settle();
-check('menu → roadmap', (await idx()) === 2);
+check('menu → skill domains', (await idx()) === D0, `index ${await idx()}`);
+check('no roadmap term/stage selector anywhere', await page.evaluate(() => document.querySelectorAll('.term-btn, [data-term], [data-term-panel]').length === 0));
 
-// term selection updates the detail panel
-await page.click('.term-btn[data-term="4"]');
-await page.waitForTimeout(400);
-const termOk = await page.evaluate(() => {
-  const vis = [...document.querySelectorAll('[data-term-panel]')].filter((p) => !p.hidden).map((p) => p.dataset.termPanel);
-  return vis.length === 1 && vis[0] === '4';
-});
-check('term T5 selected shows its detail', termOk);
+// orbit — sideways moves between cards and wraps round the ring
+await page.keyboard.press('ArrowLeft');
+await settle();
+check('orbit: ArrowLeft from card 01 wraps to card 09', (await idx()) === D0 + 8, `index ${await idx()}`);
+await page.keyboard.press('ArrowRight');
+await settle();
+check('orbit: ArrowRight wraps back to card 01', (await idx()) === D0, `index ${await idx()}`);
+await page.mouse.move(900, 460);
+await page.mouse.down();
+for (let k = 1; k <= 10; k++) await page.mouse.move(900 - k * 14, 462);
+await page.mouse.up();
+await settle();
+check('orbit: mouse drag left → card 02', (await idx()) === D0 + 1, `index ${await idx()}`);
+await page.click('.hnav-btn[data-hstep="1"]');
+await settle();
+check('orbit: next button → card 03', (await idx()) === D0 + 2, `index ${await idx()}`);
+await page.click('.dom-btn[data-goto-domain="6"]');
+await settle();
+check('orbit: index jump → card 07', (await idx()) === D0 + 6, `index ${await idx()}`);
+const card = await page.evaluate(() => [document.querySelector('[data-ind-label]').textContent, document.querySelector('.dom-btn[aria-current="true"]')?.dataset.gotoDomain]);
+check('orbit: indicator + index show position', card[0] === 'Skill Domains 07' && card[1] === '6', card.join(' | '));
+await page.click('[data-next]');
+await settle();
+check('orbit: "Next" goes to the next page, resuming project 03', (await idx()) === P0 + 2, `index ${await idx()}`);
 
 // focus lands inside the active panel when tabbing
 await page.keyboard.press('Tab');
@@ -102,19 +155,10 @@ const focusInPanel = await page.evaluate(() => {
 });
 check('Tab focus is on a live control', focusInPanel);
 
-// sound toggle
-await page.click('[data-sound]');
-await page.waitForTimeout(300);
-const pressed = await page.evaluate(() => document.querySelector('[data-sound]').getAttribute('aria-pressed'));
-check('sound toggles on', pressed === 'true', `aria-pressed=${pressed}`);
-await page.click('[data-sound]');
-
-// project index jumps to a build
-await page.keyboard.press('ArrowDown');
-await settle();
+// project index jumps to a project
 await page.click('.pidx-btn[data-goto-project="5"]');
 await settle();
-check('project index → build 06', (await idx()) === 8, `index ${await idx()}`);
+check('project index → project 06', (await idx()) === P0 + 5, `index ${await idx()}`);
 
 check('no page/console errors', errors.length === 0, errors.slice(0, 3).join(' | '));
 console.log(fails ? `${fails} FAILED` : 'ALL PASSED');

@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { PLATE, pose, type Formation, type PlatePose, type StaggerOrder, type StripMode } from './plates';
 import { shot, type MoveSpec, type Shot } from './rig';
-import { currentTermIndex } from '../content/content';
 
 /**
  * ART DIRECTION
@@ -11,8 +10,8 @@ import { currentTermIndex } from '../content/content';
  *
  *   origin      — a standing monolith; the name behind it
  *   position    — the monolith lies down and opens into a system stack
- *   roadmap     — the stack unfolds into a floating stair: one tread per term
- *   builds 1–8  — the camera climbs the stair, one build per tread
+ *   domains 1–9 — the stack stands up into a ring of capability cards that revolves
+ *   builds 1–8  — the ring lays down into a floating stair; the camera climbs it, one project per tread
  *   stack A/B   — the treads lift into a floor plan of capabilities
  *   directions  — the plan resolves into a foundation and six lanes
  *   contact     — everything closes back into the monolith, where the lanes lead
@@ -42,8 +41,6 @@ export interface Arrival {
 
 const deg = THREE.MathUtils.degToRad;
 const N = PLATE.N;
-/** The term the calendar says we are in (−1 before T1) — lit on the stair, never claimed as progress. */
-const now = currentTermIndex();
 const zeros = () => new Array(N).fill(0);
 
 function groupAt(x: number, y: number, z: number, yawDeg = 0, rollDeg = 0) {
@@ -132,6 +129,33 @@ function stair(active = -1): Formation {
   });
   return { group: groupAt(0, 0, 0), plates };
 }
+
+/* -------------------------------------------------------------------------- */
+/* Orbit — nine capability cards standing on one ring                          */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The cards stand upright, faces turned outward, evenly around a ring. The
+ * plates never move relative to the ring: changing card only rotates the ring's
+ * group, so a transition is a true revolution about its centre (never a chord).
+ */
+export const RING = { c: new THREE.Vector3(0, 3.1, -11.6), r: 11.2, step: 360 / N };
+
+function ring(active: number): Formation {
+  const plates: PlatePose[] = [];
+  for (let i = 0; i < N; i++) {
+    const th = deg(i * RING.step);
+    // rx 90° stands the plate up with its top face outward; ry turns it to its slot
+    plates.push(pose(RING.r * Math.sin(th), 0, RING.r * Math.cos(th), deg(90), th, 0));
+  }
+  return { group: groupAt(RING.c.x, RING.c.y, RING.c.z, -active * RING.step), plates };
+}
+
+/** Circular distance between two card indices on the ring. */
+export const ringDist = (a: number, b: number) => {
+  const d = Math.abs(a - b) % N;
+  return Math.min(d, N - d);
+};
 
 /* -------------------------------------------------------------------------- */
 /* Floor plan of capabilities                                                  */
@@ -283,23 +307,23 @@ function composeBase(kind: StepKind, sub: number, vp: Viewport): Composition {
       return {
         formation: systemStack(),
         // Held right of the headline with room for the layer labels before the section rail.
-        shot: P ? shot([c.x, c.y - 0.3, c.z], 31, 11, 28, 46, -0.32, 0.3) : shot([c.x + 0.6, c.y - 0.1, c.z], 21.5 * fit, 33, 12, 30, 0.36, 0.06),
+        shot: P ? shot([c.x, c.y - 0.3, c.z], 31, 11, 28, 46, -0.32, 0.44) : shot([c.x + 0.6, c.y - 0.1, c.z], 21.5 * fit, 33, 12, 30, 0.36, 0.06),
         accent,
         strip: 'long',
       };
     }
     case 'roadmap': {
-      // A wide lens from below the first tread: "now" is large and close, the later terms
-      // recede and climb to the upper right — time reads forward, left to right.
-      const mid = onTread(4, new THREE.Vector3(0.6, 0.2, 0));
+      // The skill-domain orbit. The active card always turns to the front of the ring, so the
+      // camera holds still while the ring revolves beneath it; the neighbours recede either side.
       const accent = zeros();
-      if (now >= 0 && now < N) accent[now] = 0.8;
+      accent[sub] = 1;
+      const f = new THREE.Vector3(RING.c.x, RING.c.y, RING.c.z + RING.r);
       return {
-        formation: stair(),
-        // upright: a long lens from far back lays the whole climb across the band between the copy
-        shot: P ? shot([mid.x, mid.y - 0.2, mid.z], 160, 30, 32, 26, 0, 0.075) : shot([mid.x + 0.3, mid.y - 0.3, mid.z], 46 * fit, 24, 28, 42, 0.5, 0),
+        formation: ring(sub),
+        shot: P ? shot([f.x, f.y + 0.6, f.z], 20.5, 0, 9, 40, 0, -0.04) : shot([f.x, f.y + 0.1, f.z], 16.5 * fit, 12, 7, 31, 0.4, 0.02),
         accent,
-        strip: 'long',
+        // the short strip runs up the card's outer edge — the lit edge faces the camera
+        strip: 'short',
       };
     }
     case 'build': {
@@ -382,9 +406,11 @@ export function arrival(kind: StepKind, _sub: number, fromKind: StepKind | null)
     case 'position':
       return { duration: 2.1, move: { fovKick: 5, lift: deg(9), swing: deg(16) }, stagger: 0.05, order: 'up' };
     case 'roadmap':
+      // card → card: one quick, controlled revolution with a slight breath for depth
+      if (fromKind === 'roadmap') return { duration: 1.2, move: { fovKick: 1.5, breathe: 1.05 }, stagger: 0, order: 'none' };
       return fromKind === 'build'
-        ? { duration: 1.9, move: { fovKick: 3, logDist: true }, stagger: 0.03, order: 'up' }
-        : { duration: 2.25, move: { fovKick: 6, lift: deg(12), logDist: true }, stagger: 0.07, order: 'up' };
+        ? { duration: 1.9, move: { fovKick: 3, logDist: true, swing: deg(-10) }, stagger: 0.03, order: 'up' }
+        : { duration: 2.25, move: { fovKick: 6, lift: deg(10), logDist: true, swing: deg(14) }, stagger: 0.06, order: 'center' };
     case 'build':
       return fromKind === 'build'
         ? { duration: 1.5, move: { fovKick: 4.5, lift: deg(6), breathe: 1.16 }, stagger: 0.0, order: 'none' }

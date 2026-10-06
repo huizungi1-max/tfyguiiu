@@ -13,7 +13,7 @@ export interface Step {
 const KIND: Record<string, StepKind> = {
   origin: 'origin',
   position: 'position',
-  roadmap: 'roadmap',
+  domains: 'roadmap', // the skill-domain orbit (internal kind name kept for the 3D system)
   builds: 'build',
   stack: 'stack',
   directions: 'directions',
@@ -34,6 +34,8 @@ sections.forEach((s, si) => {
 });
 
 export const firstStepOfSection = (si: number) => steps.findIndex((s) => s.section === si);
+/** Horizontal sections move sideways between their steps; vertical gestures leave them. */
+export const isHorizontal = (si: number) => !!sections[si]?.horizontal;
 export const stepFromHash = (hash: string) => {
   const h = hash.replace(/^#/, '');
   if (!h) return -1;

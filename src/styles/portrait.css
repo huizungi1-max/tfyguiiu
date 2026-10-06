@@ -69,69 +69,55 @@ html.js.portrait .pl-txt {
   flex: 1 1 auto;
 }
 
-/* — 02 position ————————————————————————————————————————————————————— */
-html.js.portrait .panel-position .display {
+/* — shared: titles ———————————————————————————————————————————————— */
+html.js.portrait .ttl {
   margin-bottom: 14px;
 }
-html.js.portrait .legend {
-  margin-top: 14px;
+html.js.portrait .ttl-sub {
+  margin-top: 9px;
+  gap: 9px;
+  font-size: 10.5px;
+  letter-spacing: 0.13em;
+}
+html.js.portrait .ttl-bar {
+  width: 16px;
 }
 
-/* — 03 roadmap —————————————————————————————————————————————————————— */
-html.js.portrait .roadmap-head {
+/* — 02 capabilities ——————————————————————————————————————————————— */
+html.js.portrait .tier {
+  grid-template-columns: 1fr;
+  gap: 5px;
+  padding: 10px 0;
+}
+html.js.portrait .tier-k {
+  padding-top: 0;
+  font-size: 9.5px;
+}
+html.js.portrait .tier-areas {
+  font-size: clamp(12.5px, 3.6vw, 16px);
+}
+html.js.portrait .tier-detail {
+  margin-top: 3px;
+  font-size: 9.5px;
+  line-height: 1.5;
+}
+
+/* — 03 skill domains ———————————————————————————————————————————————— */
+html.js.portrait .dom-head {
   top: calc(var(--top) + 58px);
   right: var(--m);
   width: auto;
 }
-html.js.portrait .roadmap-head .display {
-  margin-bottom: 10px;
-}
-html.js.portrait .roadmap-head .lede {
-  font-size: 13px;
-  max-width: 30em;
-}
-html.js.portrait .roadmap-panel {
-  right: var(--m);
-  width: auto;
-  bottom: var(--copy-bottom);
-}
-html.js.portrait .term-bar {
-  margin-bottom: 12px;
-}
-html.js.portrait .term-btn {
-  padding: 8px 0 4px;
-  min-height: 34px;
-}
-html.js.portrait .term-btn-id {
-  font-size: 13px;
-}
-html.js.portrait .term-btn-date {
+html.js.portrait .dom-index {
   display: none;
 }
-html.js.portrait .term-detail {
-  min-height: 0;
+
+/* — sideways navigator, compact: prev · position · next ——————————————— */
+html.js.portrait .hnav {
+  gap: 10px;
 }
-html.js.portrait .term-head {
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-  row-gap: 2px;
-}
-html.js.portrait .term-id {
-  font-size: 20px;
-}
-html.js.portrait .term-dl {
-  gap: 7px;
-}
-html.js.portrait .term-dl > div {
-  grid-template-columns: 5.4em 1fr;
-  gap: 8px;
-}
-html.js.portrait .term-dl dd {
-  font-size: 12.5px;
-  column-gap: 10px;
-}
-html.js.portrait .term-dl .dd-mono {
-  font-size: 10.5px;
+html.js.portrait .hnav-hint {
+  display: none;
 }
 
 /* — 04 builds ——————————————————————————————————————————————————————— */
@@ -179,19 +165,11 @@ html.js.portrait .chips li {
   font-size: 10px;
   padding: 5px 7px 4px;
 }
-/* the caption hangs under the section kicker, clear of the treads climbing away top-right */
-html.js.portrait .pj-fig {
-  top: calc(var(--top) + 84px);
-  bottom: auto;
-  left: var(--m);
-  right: auto;
-  max-width: min(64%, 340px);
-  text-align: left;
-  font-size: 9.5px;
-  line-height: 1.5;
-}
 html.js.portrait .pidx {
   display: none;
+}
+html.js.portrait .pnav {
+  bottom: var(--top);
 }
 
 /* — 05 stack ———————————————————————————————————————————————————————— */
@@ -347,6 +325,7 @@ html.js.portrait .stage::before {
   transition: opacity 0.9s var(--e-out);
   pointer-events: none;
 }
-html.js.portrait[data-step='stack'] .stage::before {
+html.js.portrait[data-step='stack'] .stage::before,
+html.js.portrait[data-step='position'] .stage::before {
   opacity: 1;
 }

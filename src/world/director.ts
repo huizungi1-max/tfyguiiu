@@ -92,13 +92,17 @@ export class Director {
     this.settleListeners.push(fn);
   }
 
-  goTo(index: number, opts: { instant?: boolean; from?: number } = {}) {
+  /**
+   * `adjacent` marks a move as one gesture-sized step even when the indices are far apart
+   * (sideways wrap on the orbit, or leaving a horizontal section for the next page).
+   */
+  goTo(index: number, opts: { instant?: boolean; from?: number; adjacent?: boolean } = {}) {
     index = clamp(Math.round(index), 0, steps.length - 1);
     if (index === this.index && !opts.instant && this.t >= 1) return false;
     const prev = this.index;
     const fromStep = steps[opts.from ?? prev];
     const toStep = steps[index];
-    const adjacent = Math.abs(index - prev) === 1;
+    const adjacent = opts.adjacent ?? Math.abs(index - prev) === 1;
     this.dir = index >= prev ? 1 : -1;
     this.reduced = env.reducedMotion;
 

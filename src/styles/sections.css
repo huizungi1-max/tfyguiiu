@@ -139,7 +139,7 @@ html.js .origin-block {
   left: var(--body-right);
   right: var(--m);
   /* the bottom row clears the corner "next" control; its trace ends in open space */
-  bottom: calc(var(--top) + 16px);
+  bottom: calc(var(--top) - 6px);
   z-index: 3;
 }
 .origin-head {
@@ -220,7 +220,7 @@ html:not(.js) .origin-name {
    length (about half the old full-width span) and stop well short of the right edge. */
 .pl-trace {
   flex: 0 1 auto;
-  width: clamp(110px, 13vw, 240px);
+  width: clamp(90px, 10vw, 180px);
   display: flex;
   align-items: center;
   min-width: 48px;

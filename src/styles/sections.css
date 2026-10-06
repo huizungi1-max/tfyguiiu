@@ -139,7 +139,7 @@ html.js .origin-block {
   left: var(--body-right);
   right: var(--m);
   /* the bottom row clears the corner "next" control; its trace ends in open space */
-  bottom: calc(var(--top) - 6px);
+  bottom: calc(var(--top) + 10px);
   z-index: 3;
 }
 .origin-head {

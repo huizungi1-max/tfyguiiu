@@ -108,25 +108,29 @@ await page.keyboard.press('Home');
 await settle();
 check('Home → origin', (await idx()) === 0);
 
-// hero: scroll scrubs the eagle's flight (both ways) instead of stepping; far enough hands over
-const scrub = () => page.evaluate(() => window.__app.eagle.scrub);
+// hero: the eagle flies in by itself, keeps beating its wings while idle; one swipe hands over
+const eagle = () => page.evaluate(() => ({ u: window.__app.eagle.u, on: window.__app.eagle.root.visible }));
+const arrived = () => page.waitForFunction(() => window.__app.eagle.root.visible && window.__app.eagle.u > 0.4, null, { timeout: 30000 }).then(() => true, () => false);
+check('hero: the eagle flies in without any input', (await arrived()) && (await idx()) === 0, JSON.stringify(await eagle()));
+const wingZ = () => page.evaluate(() => window.__app.eagle.wings[0].shoulder.rotation.z);
+const z0 = await wingZ();
+let moved = 0;
+for (let i = 0; i < 6; i++) {
+  await page.waitForTimeout(150);
+  moved = Math.max(moved, Math.abs((await wingZ()) - z0));
+}
+check('hero: its wings keep beating while idle', moved > 0.05 && (await idx()) === 0, `swing ${moved.toFixed(3)} rad`);
 await wheel(0, 120);
-await wheel(0, 120);
-await page.waitForTimeout(250);
-const s1 = await scrub();
-check('hero: a little scroll flies the eagle in, page stays', (await idx()) === 0 && s1 > 0.2 && s1 < 0.3, `scrub ${s1.toFixed(3)}`);
-await page.waitForTimeout(300);
-await wheel(0, -120);
-await page.waitForTimeout(250);
-const s2 = await scrub();
-check('hero: scrolling back flies it back', (await idx()) === 0 && s2 < s1, `scrub ${s2.toFixed(3)}`);
-await page.waitForTimeout(300);
-for (let i = 0; i < 6; i++) await wheel(0, 120);
 await settle();
-check('hero: scrolling on hands over to Capabilities', (await idx()) === 1, `index ${await idx()}`);
+check('hero: one scroll hands over to Capabilities', (await idx()) === 1, `index ${await idx()}`);
 await page.keyboard.press('ArrowUp');
 await settle();
-check('back on the hero the sky is empty again', (await idx()) === 0 && (await scrub()) === 0);
+check('back on the hero the eagle flies in again', (await idx()) === 0 && (await arrived()), JSON.stringify(await eagle()));
+await swipe(0, -170);
+await settle();
+check('hero: a touch swipe hands over too', (await idx()) === 1, `index ${await idx()}`);
+await page.keyboard.press('Home');
+await settle();
 
 // menu: open, jump to a section, closes
 await page.click('[data-menu-open]');

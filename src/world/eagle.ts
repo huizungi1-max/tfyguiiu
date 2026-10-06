@@ -3,6 +3,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import type { World } from './world';
 import { presence, type ChangeEvent, type StageState, type StageSystem } from './director';
 import { clamp, damp, lerp, rand, smoothstep } from '../core/math';
+import { env } from '../core/env';
 import { Glow } from './glow';
 
 /**
@@ -18,8 +19,10 @@ import { Glow } from './glow';
  * between beats the bird holds a raised-wing glide.
  *
  * Flight is driven by `u` (0 → 1) along a path authored in screen space (NDC x, y + distance),
- * so it frames the same on every viewport. On the origin the user's scroll scrubs `u`; once
- * the move to the next section starts, the remaining flight plays in lockstep with it.
+ * so it frames the same on every viewport. Whenever the origin is on screen the eagle flies
+ * itself in from the top-right corner and holds station at `HOLD`, wings beating the whole
+ * time; the first swipe away hands over to the next section and the rest of the flight
+ * (out, low-left) plays in lockstep with that move.
  */
 
 /** [u, ndcX, ndcY, distance, roll] */
@@ -30,8 +33,8 @@ type Key = [number, number, number, number, number];
 const PATH_WIDE: Key[] = [
   [0.0, 1.95, 1.75, 13, -0.1],
   [0.2, 1.05, 0.98, 12.6, -0.2],
-  [0.42, 0.4, 0.42, 12.8, -0.36],
-  [0.62, 0.04, 0.16, 12, -0.42],
+  [0.45, 0.34, 0.22, 12.8, -0.36], // the hold: full wing beats stay inside the frame
+  [0.62, 0.02, 0.1, 12, -0.42],
   [0.8, -0.34, -0.3, 11, -0.5],
   [1.0, -1.1, -2.1, 8.5, -0.4],
 ];
@@ -39,7 +42,7 @@ const PATH_WIDE: Key[] = [
 const PATH_TALL: Key[] = [
   [0.0, 2.1, 1.3, 13, -0.1],
   [0.2, 0.95, 0.42, 12.6, -0.2],
-  [0.42, 0.36, -0.08, 12.8, -0.36],
+  [0.45, 0.36, -0.08, 12.8, -0.36],
   [0.62, -0.05, -0.22, 12, -0.42],
   [0.8, -0.5, -0.5, 11, -0.5],
   [1.0, -1.8, -1.4, 8.5, -0.4],
@@ -47,6 +50,12 @@ const PATH_TALL: Key[] = [
 
 /** Share of the frame the bird takes (scaled by the lens, trimmed on narrow screens). */
 const SIZE = 0.88;
+/** Where the eagle holds station on the hero (flight progress along the path). */
+const HOLD = 0.45;
+/** Seconds the fly-in takes, from off-screen top-right onto the hold. */
+const ENTER = 2.4;
+/** First visit only: a beat before it appears, while the loader lifts. */
+const FIRST_DELAY = 0.5;
 
 const cr = (p0: number, p1: number, p2: number, p3: number, t: number) => {
   const t2 = t * t;
@@ -441,14 +450,18 @@ export class Eagle implements StageSystem {
   private m: Record<MatName, THREE.ShaderMaterial>;
   private glow: Glow | null;
 
-  /** Scroll-driven target on the origin (0 = off-screen top-right). */
-  scrub = 0;
+  /** Debug captures: pin the flight at this progress while on the origin (?fly=0.45). */
+  hold: number | null = null;
+  /** Debug captures: pin the wing-beat amplitude (0 = the raised-wing glide, 1 = full stroke). */
+  beat: number | null = null;
   /** Displayed flight progress. */
   u = 0;
   /** Gentle camera lean toward the bird (read by the app). */
   lean = 0;
   private from = 0;
   private prevU = 0;
+  /** Fly-in clock on the origin (s); negative while waiting to start. */
+  private enter = -FIRST_DELAY;
   private phase = 0;
   private amp = 1;
   private sky = 1;
@@ -874,7 +887,9 @@ export class Eagle implements StageSystem {
   onChange(e: ChangeEvent) {
     if (e.from.kind === 'origin' && e.to.kind !== 'origin') this.from = this.u;
     if (e.to.kind === 'origin' && e.from.kind !== 'origin') {
-      this.scrub = this.u = this.prevU = 0;
+      // back on the hero: it flies in again
+      this.u = this.prevU = 0;
+      this.enter = 0;
       this.amp = 1;
     }
   }
@@ -891,10 +906,21 @@ export class Eagle implements StageSystem {
     if (s.t >= 1 && b === 1) this.sky = 1;
     this.world.plates.setVisibility(a || b ? 1 - clamp(this.sky) : 1);
 
-    // Flight progress: scrubbed on the origin, carried out by the transition when leaving it.
-    if (s.reduced) this.u = 0;
-    else if (b === 1) this.u = a === 1 ? damp(this.u, this.scrub, 4.2, s.dt) : 0;
-    else if (a === 1) {
+    // Flight progress. With the origin on screen the eagle flies itself in and holds station;
+    // leaving it, the rest of the flight is carried out by the transition.
+    const still = s.reduced || env.reducedMotion;
+    if (still) {
+      // no travel: while the origin is on screen it is simply there (reduced moves cut at 0.45)
+      const shown = s.t >= 1 ? b : s.t < 0.45 ? a : b;
+      this.u = shown ? (this.hold ?? HOLD) : 0;
+    } else if (b === 1) {
+      // arriving from another section it waits until the camera is nearly home
+      if (a === 1 || s.t >= 0.35) this.enter += s.dt;
+      const k = clamp(this.enter / ENTER);
+      // in fast, settling onto the hold — then a slow drift along the line so it never looks pinned
+      const drift = 0.012 * Math.sin(s.time * 0.33) * smoothstep(0.8, 1, k);
+      this.u = this.hold ?? (HOLD * (1 - Math.pow(1 - k, 2.4)) + drift);
+    } else if (a === 1) {
       const x = clamp(s.t / 0.55); // gone before the next section settles
       const k = this.from < 0.04 ? smoothstep(0, 1, x) : 1 - Math.pow(1 - x, 1.7);
       this.u = lerp(this.from, 1, k);
@@ -907,7 +933,7 @@ export class Eagle implements StageSystem {
       this.lean = 0;
       return;
     }
-    this.fly(s.dt, s.time, speed);
+    this.fly(s.dt, s.time, speed, still);
   }
 
   /* — flight ——————————————————————————————————————————————————————————— */
@@ -918,7 +944,7 @@ export class Eagle implements StageSystem {
     return out.multiplyScalar(-k[2] / out.z);
   }
 
-  private fly(dt: number, time: number, speed: number) {
+  private fly(dt: number, time: number, speed: number, still: boolean) {
     const cam = this.world.rig.camera;
     const aspect = window.innerWidth / Math.max(1, window.innerHeight);
     const path = window.innerHeight > window.innerWidth * 1.08 ? PATH_TALL : PATH_WIDE;
@@ -947,21 +973,21 @@ export class Eagle implements StageSystem {
     const fov = THREE.MathUtils.degToRad(cam.fov);
     this.root.scale.setScalar(T.size * 12 * Math.tan(fov / 2) * Math.min(1, aspect / 0.95));
 
-    // Stroke: strong beats flying in and gathering for the dive; across the middle a raised-wing
-    // glide — unless the scroll itself is driving the flight, which beats the wings.
+    // Stroke: the wings never rest — hard beats flying in and away, a steady working beat while it
+    // holds station, breathing a little so it never looks mechanical. (Reduced motion: held still
+    // in the raised-wing glide.) The exit ends in a tuck.
     const fold = smoothstep(0.84, 1.0, u) * 0.75;
-    const comingIn = 1 - smoothstep(0.2, 0.36, u);
-    const leaving = smoothstep(0.64, 0.8, u);
-    const drive = Math.min(1, speed * 1.8);
-    this.amp = damp(this.amp, Math.max(0.06, comingIn, leaving * 0.85, drive * 0.9), 2.4, dt);
-    const A = this.amp * (1 - fold);
+    const travel = Math.min(1, speed * 2.5);
+    this.amp = still ? 0 : (this.beat ?? damp(this.amp, 0.68 + 0.32 * travel, 3, dt));
+    const A = this.amp * (1 - fold) * (still ? 1 : 0.92 + 0.08 * Math.sin(time * 0.53));
     const dihedral = lerp(T.dih, 0.1, this.amp);
-    this.phase += Math.PI * 2 * lerp(0.42, 0.95, this.amp) * dt;
+    if (!still) this.phase += Math.PI * 2 * lerp(0.55, 1.0, this.amp) * dt;
     const sn = Math.sin(this.phase);
     const cs = Math.cos(this.phase);
     const rising = Math.max(0, cs);
     const falling = Math.max(0, -cs);
-    const roll = k[3] + T.roll + 0.045 * Math.sin(time * 0.7);
+    const flutter = still ? 0 : 1 - A;
+    const roll = k[3] + T.roll + (still ? 0 : 0.045 * Math.sin(time * 0.7));
 
     for (const w of this.wings) {
       const inner = Math.max(0, -roll * w.side); // the wing on the inside of a turn rides a touch higher
@@ -974,7 +1000,7 @@ export class Eagle implements StageSystem {
         p.m.rotation.y = -p.a * spread;
         // the fingers bend up under load, and flutter a little in the glide
         p.m.rotation.x = (0.06 + 0.12 * A * falling + 0.08 * (1 - A)) * p.f * p.f;
-        p.m.rotation.z = 0.03 * Math.sin(time * 6.3 + p.f * 9 + w.side) * (1 - A);
+        p.m.rotation.z = 0.03 * Math.sin(time * 6.3 + p.f * 9 + w.side) * flutter;
       }
     }
 

@@ -18,9 +18,6 @@ import { damp } from './core/math';
 import { UI } from './ui/ui';
 import { Sound } from './audio/sound';
 
-/** How far the scrubbed flight goes before the next section takes over. */
-const HERO_COMMIT = 0.6;
-
 declare global {
   interface Window {
     __app: App;
@@ -83,8 +80,8 @@ export class App {
     this.director.add(this.type);
     this.director.add(this.labels);
     this.director.add(this.eagle);
-    // debug captures: hold the eagle at a point of its flight (?fly=0.45)
-    if (env.params.has('fly')) this.eagle.scrub = this.eagle.u = Number(env.params.get('fly'));
+    // debug captures: pin the eagle at a point of its flight (?fly=0.45)
+    if (env.params.has('fly')) this.eagle.hold = Number(env.params.get('fly'));
     this.ui = new UI(this.director, this.world, this.type, this.sound);
 
     // Remember where each horizontal section was left, so coming back resumes there.
@@ -100,7 +97,6 @@ export class App {
       progress: () => this.director.progress,
       blocked: () => this.ui.blocked,
       sideways: () => isHorizontal(this.director.step.section),
-      scrub: (d) => this.scrubHero(d),
       drag: (dx) => (this.dragTarget = Math.max(-1, Math.min(1, dx / Math.max(320, window.innerWidth * 0.5)))),
     });
 
@@ -241,18 +237,6 @@ export class App {
     if (!next) return;
     if (next.section !== cur.section && isHorizontal(next.section)) this.director.goTo(this.entry(next.section, dir), { adjacent: true });
     else this.director.goTo(next.index);
-  }
-
-  /**
-   * Scroll on the hero flies the eagle instead of stepping: the flight follows the scroll
-   * both ways, and once it is far enough across, the move to the next section takes over.
-   */
-  private scrubHero(d: number) {
-    if (this.director.step.kind !== 'origin' || env.reducedMotion || this.ui.blocked) return false;
-    const e = this.eagle;
-    e.scrub = Math.max(0, Math.min(1, e.scrub + d));
-    if (e.scrub >= HERO_COMMIT) this.move('y', 1);
-    return true;
   }
 
   /** Where a vertical move lands in a section: resume horizontal ones; enter others from the near end. */

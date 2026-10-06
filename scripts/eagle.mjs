@@ -5,6 +5,7 @@
 //   node scripts/eagle.mjs --fly 0.45 --full                (whole viewport instead of the crop)
 //   node scripts/eagle.mjs --fly 0.45 --tune '{"fz":0.6}'      (override pose dials, see Eagle.pose)
 //   node scripts/eagle.mjs --fly 0.45 --amp 1 --phase 3.14     (hold the wing beat: full stroke, mid-downstroke)
+//   node scripts/eagle.mjs --fly 0.45 --amp 0                  (the raised-wing glide pose, no beat)
 //   options: --theme light  --scale 2  --pad 40  --wait 2200
 import { chromium } from 'playwright';
 import { createServer } from 'vite';
@@ -45,8 +46,8 @@ for (const fly of flies) {
       ([deg, amp, phase]) => {
         const e = window.__app.eagle;
         const fly = e.fly.bind(e);
+        if (amp !== null) e.beat = amp;
         e.fly = (...a) => {
-          if (amp !== null) e.amp = amp;
           if (phase !== null) e.phase = phase;
           fly(...a);
           if (deg !== null) e.root.rotateY((deg * Math.PI) / 180);

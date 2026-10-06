@@ -28,4 +28,6 @@ Every push to `main` will build and deploy automatically.
 
 - Works without WebGL or JavaScript (plain document), respects `prefers-reduced-motion`,
   sound is off by default.
-- Dev-only URL params: `?step=N&nointro&q=low|high&reduced&debug&shot=az,el,dist,fov,sx,sy,dx,dy,dz`.
+- Dev-only URL params: `?step=N&nointro&q=low|high&reduced&debug&shot=az,el,dist,fov,sx,sy,dx,dy,dz`,
+  and `fly=0..1` to hold the hero eagle at a point of its flight.
+- Eagle close-ups (pose / wing-beat checks): `node scripts/eagle.mjs --fly 0.45` → `.shots/`.

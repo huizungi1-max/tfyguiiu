@@ -29,13 +29,15 @@ export class World {
   private hemi: THREE.HemisphereLight;
   private rim: THREE.DirectionalLight;
   readonly fog: THREE.FogExp2;
+  /** Extra passes drawn over the frame right after the main render (e.g. the eagle's glow). */
+  readonly post: (() => void)[] = [];
   width = 1;
   height = 1;
   dpr = 1;
 
   constructor(
     canvas: HTMLCanvasElement,
-    private q: QualitySettings,
+    readonly q: QualitySettings,
     initial: Shot,
   ) {
     this.renderer = new THREE.WebGLRenderer({
@@ -148,6 +150,7 @@ export class World {
     // keeps roughly the same depth haze however far back the camera stands.
     this.fog.density = FOG * Math.min(1, 30 / Math.max(1, this.rig.base.dist));
     this.renderer.render(this.scene, this.rig.camera);
+    for (const pass of this.post) pass();
     this.plates.group.updateMatrixWorld();
     for (let i = 0; i < PLATE.N; i++) {
       const proxy = this.frontProxies[i];

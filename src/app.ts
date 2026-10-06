@@ -157,6 +157,7 @@ export class App {
     // Render one frame before revealing (shader compile happens here, not mid-move).
     this.world.rig.update(0, 0);
     this.world.renderer.compile(this.world.scene, this.world.rig.camera);
+    this.eagle.warm();
     this.world.render();
     setLoad(0.8);
     await document.fonts.ready;

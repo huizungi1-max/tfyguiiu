@@ -201,7 +201,7 @@ html:not(.js) .origin-name {
 .pl-row {
   display: flex;
   align-items: center;
-  gap: clamp(16px, 1.8vw, 32px);
+  gap: clamp(8px, 0.8vw, 14px);
 }
 .pl-txt {
   flex: none;

@@ -77,7 +77,7 @@ function origin() {
     <div class="origin-primary" aria-hidden="true" data-a="rise">
       <span class="pl-row">
         <span class="pl-txt"><em class="lead">Ideas</em> <em class="into">into</em> Circuits.</span>
-        <span class="pl-trace" aria-hidden="true"><span class="pl-line"></span><svg class="pl-cap" viewBox="0 0 80 40" fill="none" aria-hidden="true"><path d="M0 20 H46 L58 6 H74"/><circle cx="76" cy="6" r="3.4"/></svg></span>
+        <span class="pl-trace" aria-hidden="true"><span class="pl-line"></span><svg class="pl-cap" viewBox="0 0 80 40" fill="none" aria-hidden="true"><path d="M0 20 H46 L58 34 H74"/><circle cx="76" cy="34" r="3.4"/></svg></span>
       </span>
       <span class="pl-row">
         <span class="pl-txt"><em class="lead">Circuits</em> <em class="into">into</em> Real Solutions.</span>

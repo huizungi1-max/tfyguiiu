@@ -14,6 +14,13 @@
     <script>
       // Progressive enhancement: without JS the content reads as a normal document.
       document.documentElement.classList.add('js');
+      // Theme before first paint: ?theme= override, then the saved choice, else dark (the signature look).
+      (function () {
+        var t = new URLSearchParams(location.search).get('theme');
+        try { t = t || localStorage.getItem('theme'); } catch (e) {}
+        if (t !== 'light') t = 'dark';
+        document.documentElement.dataset.theme = t;
+      })();
     </script>
   </head>
   <body>

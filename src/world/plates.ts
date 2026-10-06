@@ -109,6 +109,17 @@ export class Plates {
     }
   }
 
+  /** Dark: anodised graphite under lacquer. Light: pale satin aluminium that reads on paper. */
+  setTheme(light: boolean) {
+    const m = this.material;
+    m.color.set(light ? '#e9e6e0' : '#2a2c31');
+    m.metalness = light ? 0.55 : 1.0;
+    m.roughness = light ? 0.42 : 0.38;
+    m.clearcoat = light ? 0.6 : 0.85;
+    m.envMapIntensity = light ? 0.9 : 1.0;
+    m.needsUpdate = true;
+  }
+
   /** Fade the whole monolith/plate structure (0..1) — the hero sculpture replaces it on origin. */
   setVisibility(v: number) {
     // Metal with clearcoat fades muddily, so cross the threshold with opacity then cut cleanly.

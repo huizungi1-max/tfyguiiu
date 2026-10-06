@@ -31,6 +31,7 @@ export class UI {
   private live: Scope = [];
   /** Navigation by axis (set by the app, which owns the navigation rule). */
   onNav: (axis: Axis, dir: 1 | -1) => void = () => {};
+  onTheme: (light: boolean) => void = () => {};
 
   constructor(
     private director: Director,
@@ -324,7 +325,7 @@ export class UI {
   private bind() {
     document.addEventListener('click', (e) => {
       const t = e.target as HTMLElement;
-      const el = t.closest<HTMLElement>('[data-goto-step],[data-goto-section],[data-goto-project],[data-goto-domain],[data-hstep],[data-next],[data-copy],[data-sound],[data-menu-open],[data-menu-close]');
+      const el = t.closest<HTMLElement>('[data-goto-step],[data-goto-section],[data-goto-project],[data-goto-domain],[data-hstep],[data-next],[data-copy],[data-sound],[data-menu-open],[data-menu-close],[data-theme-toggle]');
       if (!el) {
         if (this.menuOpen && t === this.menu) this.closeMenu();
         return;
@@ -351,6 +352,8 @@ export class UI {
         el.setAttribute('aria-pressed', String(on));
         const l = el.querySelector('[data-sound-label]');
         if (l) l.textContent = on ? 'Sound on' : 'Sound off';
+      } else if (el.dataset.themeToggle !== undefined) {
+        this.onTheme(document.documentElement.dataset.theme !== 'light');
       } else if (el.dataset.menuOpen !== undefined) {
         this.openMenu();
       } else if (el.dataset.menuClose !== undefined) {

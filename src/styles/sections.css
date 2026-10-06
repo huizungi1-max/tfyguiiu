@@ -93,7 +93,7 @@ html.js .col-left {
 }
 .chips-quiet li {
   border-color: transparent;
-  background: rgba(236, 234, 228, 0.055);
+  background: rgba(var(--ink-rgb), 0.055);
   color: var(--ink-2);
 }
 
@@ -128,6 +128,21 @@ html.js .col-left {
   mask-image: linear-gradient(90deg, #000 72%, transparent 100%),
     linear-gradient(0deg, #000 86%, transparent 100%);
   mask-composite: intersect;
+}
+/* Light: a black studio ground can't dissolve into paper, so the portrait becomes a framed
+   print — a crisp dark column left of the name, cropped on the face. */
+html[data-theme='light'] .origin-portrait {
+  left: var(--m);
+  top: calc(var(--top) + 72px);
+  bottom: auto;
+  width: calc(var(--body-right) - var(--m) - 3vh);
+  height: calc(100vh - 2 * var(--top) - 82px); /* foot lands on the name block's foot line */
+  object-fit: cover;
+  object-position: 46% 22%;
+  -webkit-mask-image: none;
+  mask-image: none;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(var(--ink-rgb), 0.12), 0 30px 60px -30px rgba(var(--ink-rgb), 0.45);
 }
 html:not(.js) .origin-portrait {
   display: none;
@@ -169,7 +184,7 @@ html.js .origin-block {
   line-height: 0.84;
   letter-spacing: -0.01em;
   text-transform: uppercase;
-  background: linear-gradient(180deg, #f6f4ee 0%, #e7e4dd 42%, #908d87 100%);
+  background: var(--name-grad);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -765,7 +780,7 @@ html.js .contact-inner {
 }
 .contact-mail:hover,
 .contact-mail:focus-visible {
-  color: #fff;
+  color: var(--hi);
 }
 .btn-copy {
   height: 32px;

@@ -26,6 +26,8 @@ export class World {
   private cssBack: CSS3DRenderer;
   private cssFront: CSS3DRenderer;
   private key: THREE.DirectionalLight;
+  private hemi: THREE.HemisphereLight;
+  private rim: THREE.DirectionalLight;
   readonly fog: THREE.FogExp2;
   width = 1;
   height = 1;
@@ -77,10 +79,11 @@ export class World {
       this.key.shadow.radius = 4;
     }
     this.scene.add(this.key, this.key.target);
-    const rim = new THREE.DirectionalLight(0xc8d4ff, 0.55);
-    rim.position.set(10, 4, -14);
-    this.scene.add(rim);
-    this.scene.add(new THREE.HemisphereLight(0x2a2c30, 0x050506, 0.35));
+    this.rim = new THREE.DirectionalLight(0xc8d4ff, 0.55);
+    this.rim.position.set(10, 4, -14);
+    this.scene.add(this.rim);
+    this.hemi = new THREE.HemisphereLight(0x2a2c30, 0x050506, 0.35);
+    this.scene.add(this.hemi);
 
     this.plates = new Plates({ segments: q.segments, brushed: createBrushedTexture(512), shadows: q.shadows });
     this.scene.add(this.plates.group);
@@ -96,6 +99,22 @@ export class World {
     this.cssFront = new CSS3DRenderer({ element: document.getElementById('wt-front') as HTMLElement });
 
     this.resize();
+  }
+
+  /**
+   * Light theme: a bright paper studio. Fog fades distance toward the page colour (not black),
+   * a soft sky fill opens the shadows, and the plates turn to pale anodised aluminium.
+   */
+  setTheme(light: boolean) {
+    this.fog.color.set(light ? '#f1eee8' : BG);
+    this.hemi.color.set(light ? 0xffffff : 0x2a2c30);
+    this.hemi.groundColor.set(light ? 0xd9d4ca : 0x050506);
+    this.hemi.intensity = light ? 1.35 : 0.35;
+    this.key.intensity = light ? 2.1 : 1.6;
+    this.rim.intensity = light ? 0.35 : 0.55;
+    this.scene.environmentIntensity = light ? 1.15 : 1.0;
+    this.renderer.toneMappingExposure = light ? 1.0 : 1.05;
+    this.plates.setTheme(light);
   }
 
   setDpr(dpr: number) {

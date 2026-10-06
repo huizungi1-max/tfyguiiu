@@ -278,6 +278,9 @@ function chrome() {
 <header class="chrome" data-chrome>
   <button type="button" class="wordmark" data-goto-step="0" aria-label="Kaushal — return to origin">Kaushal</button>
   <div class="chrome-right">
+    <button type="button" class="chip-btn theme-btn" data-theme-toggle aria-pressed="false" aria-label="Switch to light theme">
+      <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle class="th-disc" cx="10" cy="10" r="4.2"/><g class="th-rays"><path d="M10 1.5v2.2M10 16.3v2.2M1.5 10h2.2M16.3 10h2.2M4 4l1.55 1.55M14.45 14.45L16 16M4 16l1.55-1.55M14.45 5.55L16 4"/></g><circle class="th-bite" cx="13.2" cy="6.8" r="3.9"/></svg>
+    </button>
     <button type="button" class="chip-btn mono indicator" data-menu-open aria-haspopup="dialog" aria-expanded="false" aria-controls="menu">
       <span class="ind-n"><span data-ind-cur>01</span><span class="dim"> / ${pad(sections.length)}</span></span>
       <span class="ind-label" data-ind-label>${esc(sections[0].label)}</span>

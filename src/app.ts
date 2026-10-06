@@ -85,6 +85,8 @@ export class App {
     // Remember where each horizontal section was left, so coming back resumes there.
     this.director.onChange((e) => (this.lastSub[e.to.section] = e.to.sub));
     this.ui.onNav = (axis, dir) => this.move(axis, dir);
+    this.ui.onTheme = (light) => this.applyTheme(light, true);
+    this.applyTheme(document.documentElement.dataset.theme === 'light', false);
 
     this.input = new Input({
       step: (dir, axis) => this.move(axis, dir),
@@ -178,6 +180,29 @@ export class App {
     const s = target.shot;
     const from = shot([s.target.x, s.target.y + 0.4, s.target.z], s.dist * 2.3, THREE.MathUtils.radToDeg(s.az) - 34, -10, s.fov - 6, s.sx, s.sy);
     this.director.intro(from, spread, { duration: 3.1, move: { logDist: true, fovKick: 3 }, stagger: 0.05, order: 'center' });
+  }
+
+  /** Light / dark: page tokens via data-theme, the scene and the hero sculpture re-skin themselves. */
+  applyTheme(light: boolean, user: boolean) {
+    const root = document.documentElement;
+    if (user) {
+      root.classList.add('theme-anim');
+      window.setTimeout(() => root.classList.remove('theme-anim'), 700);
+      try {
+        localStorage.setItem('theme', light ? 'light' : 'dark');
+      } catch {
+        /* storage unavailable — the choice just won't persist */
+      }
+    }
+    root.dataset.theme = light ? 'light' : 'dark';
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', light ? '#f1eee8' : '#050506');
+    document.querySelector('meta[name="color-scheme"]')?.setAttribute('content', light ? 'light' : 'dark');
+    const btn = document.querySelector('[data-theme-toggle]');
+    btn?.setAttribute('aria-pressed', String(light));
+    btn?.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
+    this.world.setTheme(light);
+    this.orbit.setTheme(light);
+    this.glyphs.setTheme(light);
   }
 
   /**

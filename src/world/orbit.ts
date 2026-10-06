@@ -18,8 +18,13 @@ import { createRadialTexture } from './environment';
 const ORANGE = new THREE.Color('#ff5b24');
 const HOT = new THREE.Color('#ffb27a');
 const LINE = new THREE.Color('#9aa0aa');
+/** Light-theme paints: a clean signal orange and a deeper core for the beam. */
+const ORANGE_L = new THREE.Color('#f0541a');
+const DEEP = new THREE.Color('#e2470e');
 
 type Fade = { set(v: number): void };
+/** A colour + opacity pair for each theme. */
+type Look = { dark: [THREE.ColorRepresentation, number]; light: [THREE.ColorRepresentation, number] };
 
 export class Orbit implements StageSystem {
   readonly group = new THREE.Group();
@@ -31,6 +36,8 @@ export class Orbit implements StageSystem {
   private fades: Fade[] = [];
   private reveal = 0;
   private radial = createRadialTexture(128, 2.4);
+  /** Everything whose colour, opacity or blending depends on the theme. */
+  private themed: { m: THREE.Material & { color?: THREE.Color; opacity: number }; look: Look; base: { op: number }; shader?: THREE.ShaderMaterial }[] = [];
 
   constructor(private world: World) {
     this.group.position.copy(HERO.p).add(new THREE.Vector3(-0.4, 0.5, -1.6));
@@ -62,19 +69,32 @@ export class Orbit implements StageSystem {
     return m;
   }
 
-  /** Flat additive colour — glows, ignores lighting and tone mapping. */
+  /** Register a material whose look changes with the theme; its fade scales the theme's opacity. */
+  private track<M extends THREE.Material & { color?: THREE.Color; opacity: number }>(m: M, look: Look, shader?: THREE.ShaderMaterial) {
+    const base = { op: look.dark[1] };
+    this.themed.push({ m, look, base, shader });
+    this.fades.push({
+      set: (v) => {
+        if (shader) shader.uniforms.uO.value = base.op * v;
+        else m.opacity = base.op * v;
+      },
+    });
+    return m;
+  }
+
+  /** Dark: additive light. Light: the same forms painted in orange (light added to paper vanishes). */
   private glow(color: THREE.Color, opacity: number) {
     const m = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
-    this.fades.push({ set: (v) => (m.opacity = opacity * v) });
-    return m;
+    const lightCol = color.equals(HOT) ? DEEP : ORANGE_L;
+    return this.track(m, { dark: [color, opacity], light: [lightCol, Math.min(1, opacity * (opacity < 0.3 ? 0.9 : 1))] });
   }
 
   private lineMat(color: THREE.Color, opacity: number, dashed = false) {
     const m = dashed
       ? new THREE.LineDashedMaterial({ color, transparent: true, opacity: 0, dashSize: 0.045, gapSize: 0.04, depthWrite: false, fog: false })
       : new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0, depthWrite: false, fog: false });
-    this.fades.push({ set: (v) => (m.opacity = opacity * v) });
-    return m;
+    const lightCol = color.equals(LINE) ? new THREE.Color('#4a4e56') : ORANGE_L;
+    return this.track(m, { dark: [color, opacity], light: [lightCol, Math.min(1, opacity * 1.25)] });
   }
 
   /** A glowing tube: hot core + two soft halos (fake bloom). */
@@ -93,7 +113,9 @@ export class Orbit implements StageSystem {
 
   private sprite(color: THREE.Color, size: number, opacity: number, parent: THREE.Object3D, at = new THREE.Vector3()) {
     const m = new THREE.SpriteMaterial({ map: this.radial, color, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
-    this.fades.push({ set: (v) => (m.opacity = opacity * v) });
+    // on paper the white hot-spot becomes a soft orange bloom
+    const white = color.getHex() === 0xffffff;
+    this.track(m, { dark: [color, opacity], light: [white ? DEEP : ORANGE_L, white ? opacity * 0.5 : opacity * 0.55] });
     const s = new THREE.Sprite(m);
     s.scale.setScalar(size);
     s.position.copy(at);
@@ -174,16 +196,20 @@ export class Orbit implements StageSystem {
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         toneMapped: false,
-        uniforms: { uC: { value: color }, uO: { value: 0 }, uS: { value: soft } },
+        uniforms: { uC: { value: color.clone() }, uO: { value: 0 }, uS: { value: soft }, uAdd: { value: 1 } },
         vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-        fragmentShader: `uniform vec3 uC; uniform float uO; uniform float uS; varying vec2 vUv;
+        fragmentShader: `uniform vec3 uC; uniform float uO; uniform float uS; uniform float uAdd; varying vec2 vUv;
           void main(){
             float ends = smoothstep(0.1, 0.42, vUv.y) * smoothstep(1.0, 0.72, vUv.y); // long fade at the foot
             float across = pow(max(0.0, 1.0 - abs(vUv.x - 0.5) * 2.0), uS);
-            gl_FragColor = vec4(uC * uO * ends * across, uO * ends * across);
+            float a = uO * ends * across;
+            // additive light on dark; painted colour (straight alpha) on paper
+            gl_FragColor = uAdd > 0.5 ? vec4(uC * a, a) : vec4(uC, a);
           }`,
       });
-      this.fades.push({ set: (v) => (m.uniforms.uO.value = opacity * v) });
+      const white = color.getHex() === 0xffffff;
+      const lightLook: [THREE.ColorRepresentation, number] = white ? [DEEP, 0.95] : color.equals(HOT) ? [ORANGE_L, 0.9] : [ORANGE_L, opacity * 0.8];
+      this.track(m as unknown as THREE.MeshBasicMaterial, { dark: [color, opacity], light: lightLook }, m);
       return m;
     };
     const beam = new THREE.Group();
@@ -235,6 +261,30 @@ export class Orbit implements StageSystem {
     this.sprite(ORANGE, 0.12, 0.9, this.face, new THREE.Vector3(1.48, -0.52, 0));
     this.sprite(ORANGE, 0.09, 0.8, this.face, new THREE.Vector3(-1.2, 0.62, 0));
     this.sprite(ORANGE, 0.1, 0.85, this.face, new THREE.Vector3(0.95, 1.02, 0));
+  }
+
+  /* — theme ———————————————————————————————————————————————————————————— */
+
+  setTheme(light: boolean) {
+    for (const t of this.themed) {
+      const [col, op] = light ? t.look.light : t.look.dark;
+      t.base.op = op;
+      const blend = light ? THREE.NormalBlending : THREE.AdditiveBlending;
+      if (t.shader) {
+        (t.shader.uniforms.uC.value as THREE.Color).set(col);
+        t.shader.uniforms.uAdd.value = light ? 0 : 1;
+        t.shader.blending = blend;
+        t.shader.needsUpdate = true;
+      } else {
+        t.m.color?.set(col);
+        // lines are always painted; glows switch between light and paint
+        t.m.blending = t.m instanceof THREE.LineBasicMaterial ? THREE.NormalBlending : blend;
+        t.m.needsUpdate = true;
+      }
+    }
+    // re-apply the current fade with the new opacities
+    const v = clamp(this.reveal);
+    for (const f of this.fades) f.set(v);
   }
 
   /* — stage ———————————————————————————————————————————————————————————— */

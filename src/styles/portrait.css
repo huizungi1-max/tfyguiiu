@@ -320,7 +320,7 @@ html.js.portrait .stage::before {
   position: absolute;
   inset: auto 0 0 0;
   height: 64%;
-  background: linear-gradient(to top, rgba(5, 5, 6, 0.94) 0%, rgba(5, 5, 6, 0.9) 62%, rgba(5, 5, 6, 0) 100%);
+  background: linear-gradient(to top, rgba(var(--bg-rgb), 0.94) 0%, rgba(var(--bg-rgb), 0.9) 62%, rgba(var(--bg-rgb), 0) 100%);
   opacity: 0;
   transition: opacity 0.9s var(--e-out);
   pointer-events: none;
@@ -328,4 +328,18 @@ html.js.portrait .stage::before {
 html.js.portrait[data-step='stack'] .stage::before,
 html.js.portrait[data-step='position'] .stage::before {
   opacity: 1;
+}
+
+/* Light, upright: the framed print spans the top, under the header. */
+html.js.portrait[data-theme='light'] .origin-portrait {
+  left: var(--m);
+  top: calc(var(--top) + 54px);
+  bottom: auto;
+  width: calc(100% - 2 * var(--m));
+  height: 36vh;
+  border-radius: 3px;
+  object-fit: cover;
+  object-position: 50% 24%;
+  -webkit-mask-image: none;
+  mask-image: none;
 }

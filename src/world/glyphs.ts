@@ -527,6 +527,11 @@ export class Glyphs implements StageSystem {
   readonly list: Glyph[];
   private m = materials();
 
+  /** On paper the contact shadow only needs to seat the forms, not black them out. */
+  setTheme(light: boolean) {
+    this.m.shadow.opacity = light ? 0.32 : 0.7;
+  }
+
   constructor(plates: Plates) {
     this.list = [g01, g02, g03, g04, g05, g06, g07, g08].map((fn) => fn(this.m));
     this.list.forEach((gl, i) => {

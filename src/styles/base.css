@@ -2,15 +2,26 @@
    Tokens
    ========================================================================== */
 :root {
+  /* — dark (default): near-black studio, warm white ink, signal orange — */
   --bg: #050506;
+  --bg-rgb: 5, 5, 6;
   --ink: #eceae4;
-  --ink-2: rgba(236, 234, 228, 0.66);
-  --ink-3: rgba(236, 234, 228, 0.42);
-  --ink-4: rgba(236, 234, 228, 0.2);
-  --line: rgba(236, 234, 228, 0.14);
-  --line-2: rgba(236, 234, 228, 0.07);
+  --ink-rgb: 236, 234, 228;
+  --ink-2: rgba(var(--ink-rgb), 0.66);
+  --ink-3: rgba(var(--ink-rgb), 0.42);
+  --ink-4: rgba(var(--ink-rgb), 0.2);
+  --line: rgba(var(--ink-rgb), 0.14);
+  --line-2: rgba(var(--ink-rgb), 0.07);
   --acc: #ff5b24;
   --acc-dim: rgba(255, 91, 36, 0.5);
+  --hi: #fff;
+  --on-acc: #0b0b0c;
+  --panel: rgba(8, 8, 9, 0.94);
+  --card-bg: rgba(8, 8, 10, 0.5);
+  --bg-glow: radial-gradient(120% 90% at 62% 46%, rgba(30, 31, 36, 0.55) 0%, rgba(12, 12, 14, 0.4) 38%, rgba(5, 5, 6, 0) 70%);
+  --name-grad: linear-gradient(180deg, #f6f4ee 0%, #e7e4dd 42%, #908d87 100%);
+  --silver-grad: linear-gradient(180deg, #f6f4ee 0%, #d9d6cf 46%, #8f8c86 100%);
+  color-scheme: dark;
 
   --f-display: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
   --f-text: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
@@ -30,6 +41,35 @@
   --e-out: cubic-bezier(0.16, 1, 0.3, 1);
   --e-in: cubic-bezier(0.55, 0, 0.75, 0);
   --e-inout: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* — light: warm paper studio, graphite ink, a deeper orange that holds contrast — */
+html[data-theme='light'] {
+  --bg: #f1eee8;
+  --bg-rgb: 241, 238, 232;
+  --ink: #16171b;
+  --ink-rgb: 22, 23, 27;
+  --ink-2: rgba(var(--ink-rgb), 0.7);
+  --ink-3: rgba(var(--ink-rgb), 0.5);
+  --ink-4: rgba(var(--ink-rgb), 0.24);
+  --line: rgba(var(--ink-rgb), 0.15);
+  --line-2: rgba(var(--ink-rgb), 0.08);
+  --acc: #ec4a12;
+  --acc-dim: rgba(236, 74, 18, 0.55);
+  --hi: #000;
+  --on-acc: #fff;
+  --panel: rgba(241, 238, 232, 0.96);
+  --card-bg: rgba(250, 248, 244, 0.86);
+  --bg-glow: radial-gradient(120% 90% at 62% 44%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.35) 40%, rgba(241, 238, 232, 0) 72%);
+  --name-grad: linear-gradient(180deg, #121316 0%, #2a2b30 46%, #6d6e73 100%);
+  --silver-grad: linear-gradient(180deg, #121316 0%, #2c2d32 46%, #6d6e73 100%);
+  color-scheme: light;
+}
+
+/* Theme switch: colours ease across instead of snapping. */
+html.theme-anim,
+html.theme-anim * {
+  transition: background-color 0.6s var(--e-out), color 0.6s var(--e-out), border-color 0.6s var(--e-out) !important;
 }
 
 /* ==========================================================================
@@ -98,7 +138,7 @@ svg {
 }
 ::selection {
   background: var(--acc);
-  color: #0b0b0c;
+  color: var(--on-acc);
 }
 [hidden] {
   display: none !important;

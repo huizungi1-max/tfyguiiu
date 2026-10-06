@@ -320,7 +320,7 @@ function composeBase(kind: StepKind, sub: number, vp: Viewport): Composition {
       const f = new THREE.Vector3(RING.c.x, RING.c.y, RING.c.z + RING.r);
       return {
         formation: ring(sub),
-        shot: P ? shot([f.x, f.y + 0.6, f.z], 20.5, 0, 9, 40, 0, -0.04) : shot([f.x, f.y + 0.1, f.z], 16.5 * fit, 12, 7, 31, 0.4, 0.02),
+        shot: P ? shot([f.x, f.y + 0.5, f.z], 23, 0, 9, 40, 0, -0.02) : shot([f.x, f.y + 0.1, f.z], 19.5 * fit, 12, 7, 31, 0.32, 0.02),
         accent,
         // the short strip runs up the card's outer edge — the lit edge faces the camera
         strip: 'short',

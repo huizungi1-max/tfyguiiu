@@ -6,8 +6,8 @@
 import {
   site,
   sections,
-  layers,
-  terms,
+  tiers,
+  domains,
   projects,
   groups,
   joints,
@@ -26,6 +26,36 @@ const line = (html: string, cls = '') => `<span class="ln ${cls}"><span class="l
 
 function kicker(index: number, label: string, extra = '') {
   return `<p class="kicker" data-a="fade"><span class="kicker-n">${pad(index + 1)}</span><span class="kicker-rule" aria-hidden="true"></span><span>${t(label)}</span>${extra}</p>`;
+}
+
+/**
+ * The title system used by every major page:
+ *   primary   — what the page contains (white, display face)
+ *   subtitle  — the cinematic line (smaller, led by an orange rule)
+ * `*word*` in the subtitle is set in the accent.
+ */
+function title(id: string, main: string[], sub: string, size: 'lg' | 'md' | 'sm' = 'md', tag: 'h2' | 'div' = 'h2') {
+  const subHtml = t(sub).replace(/\*(.+?)\*/g, '<em>$1</em>');
+  const idAttr = id ? ` id="${id}"` : '';
+  return `<${tag}${idAttr} class="ttl ttl-${size}">
+      <span class="sr-only">${t(main.join(' '))} — ${t(sub.replace(/\*/g, ''))}</span>
+      <span class="display ${size} ttl-main" aria-hidden="true">${main.map((l) => line(t(l))).join('')}</span>
+      <span class="ttl-sub" aria-hidden="true" data-a="rise"><i class="ttl-bar"></i><span>${subHtml}</span></span>
+    </${tag}>`;
+}
+
+const ARROW_L = '<svg viewBox="0 0 18 10" aria-hidden="true" focusable="false"><path d="M18 5H2M6 1L2 5l4 4"/></svg>';
+const ARROW_R = '<svg viewBox="0 0 18 10" aria-hidden="true" focusable="false"><path d="M0 5h16M12 1l4 4-4 4"/></svg>';
+
+/** Sideways navigation for horizontal sections: prev / position / next, plus the gesture hint. */
+function hnav(key: string, total: number, noun: string, firstName: string) {
+  return `<div class="hnav" data-hnav="${key}">
+    <button type="button" class="hnav-btn" data-hstep="-1" aria-label="Previous ${noun}">${ARROW_L}</button>
+    <span class="hnav-pos mono"><span class="hnav-cur" data-hnav-cur>01</span><span class="dim"> / ${pad(total)}</span></span>
+    <button type="button" class="hnav-btn" data-hstep="1" aria-label="Next ${noun}">${ARROW_R}</button>
+    <span class="hnav-name mono" data-hnav-name>${t(firstName)}</span>
+    <span class="hnav-hint mono" aria-hidden="true"><i class="hnav-hint-ar">${ARROW_L}${ARROW_R}</i><span>Swipe or drag</span></span>
+  </div>`;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -59,44 +89,47 @@ function origin() {
 }
 
 function position() {
-  const layerList = layers
-    .map((l) => `<li class="${l.role === 'core' ? 'is-core' : ''}">${t(l.name)}${l.role === 'core' ? ' <span class="sr-only">(core)</span>' : ''}</li>`)
-    .slice()
-    .reverse()
+  const rows = tiers
+    .map(
+      (tr, i) => `
+      <div class="tier tier-${tr.key}">
+        <p class="tier-k mono"><span class="tier-n">${pad(i + 1)}</span><span>${t(tr.label)}</span></p>
+        <div class="tier-body">
+          <p class="tier-areas">${tr.areas.map((a) => `<span>${t(a)}</span>`).join('')}</p>
+          <p class="tier-detail mono">${tr.detail.map(t).join('<span class="dot" aria-hidden="true"> · </span>')}</p>
+        </div>
+      </div>`,
+    )
     .join('');
   return `
 <section id="position" class="panel panel-position" data-section="1" aria-labelledby="position-title">
   <div class="col col-left">
-    ${kicker(1, 'Position')}
-    <h2 id="position-title" class="display xl">
-      <span class="sr-only">Between the circuit and the code.</span>
-      <span aria-hidden="true">${line('Between')}${line('the circuit')}${line('and the code.')}</span>
-    </h2>
-    <p class="lede" data-a="rise">${t(site.positioning)}</p>
-    <div class="legend" data-a="rise">
-      <span class="legend-core"><i aria-hidden="true"></i>Core</span>
-      <span class="legend-sup"><i aria-hidden="true"></i>Supporting</span>
+    ${kicker(1, 'Capabilities')}
+    ${title('position-title', ['Engineering', 'Capabilities'], 'Between the circuit and the code.')}
+    <div class="tiers" data-a="rise">${rows}
     </div>
-    <ol class="layer-list" aria-label="System stack, logical to physical" data-a="rise">${layerList}</ol>
   </div>
 </section>`;
 }
 
-function roadmap() {
-  // The nine plates rise through the engineering domains the profile spans.
-  // This is a capability statement, not a timeline — no stages, dates or steps.
-  const domainList = terms.map((term) => `<li>${t(term.domain)}</li>`).join('');
+function skillDomains() {
+  const index = domains
+    .map(
+      (d, i) =>
+        `<li><button type="button" class="dom-btn" data-goto-domain="${i}" aria-label="Skill domain ${pad(i + 1)}: ${esc(d.name)}"><span class="dom-n mono">${pad(i + 1)}</span><span class="dom-t">${t(d.name)}</span></button></li>`,
+    )
+    .join('');
+  // Document modes (no JS / no WebGL) and screen readers get the cards as text.
+  const doc = domains.map((d) => `<li><h3 class="grp-name">${t(d.name)}</h3><p class="grp-items-inline mono">${d.skills.map(t).join(' · ')}</p></li>`).join('');
   return `
-<section id="roadmap" class="panel panel-roadmap" data-section="2" aria-labelledby="roadmap-title">
-  <div class="roadmap-head">
-    ${kicker(2, 'Capabilities')}
-    <h2 id="roadmap-title" class="display lg">
-      <span class="sr-only">Across the whole stack.</span>
-      <span aria-hidden="true">${line('Across the')}${line('whole stack.')}</span>
-    </h2>
-    <p class="lede short" data-a="rise">From firmware on the metal to RTL and verification — the engineering domains this profile works across, read as one continuous climb.</p>
-    <ul class="domain-list mono" aria-label="Engineering domains" data-a="rise">${domainList}</ul>
+<section id="domains" class="panel panel-domains" data-section="2" aria-labelledby="domains-title">
+  <div class="dom-head">
+    ${kicker(2, 'Skill Domains')}
+    ${title('domains-title', ['Skill Domains'], 'Across the *whole* stack.')}
+    <nav class="dom-index" aria-label="Skill domains" data-a="rise"><ol>${index}</ol></nav>
   </div>
+  <ul class="dom-doc">${doc}</ul>
+  ${hnav('domains', domains.length, 'skill domain', domains[0].name)}
 </section>`;
 }
 
@@ -111,10 +144,9 @@ function project(p: Project, i: number) {
   const evidence = p.evidence?.length
     ? `<div class="pj-row"><dt class="mono dim">Evidence</dt><dd>${p.evidence.map((e) => `<a class="link" href="${esc(e.href)}" target="_blank" rel="noopener">${t(e.label)}</a>`).join(' ')}</dd></div>`
     : '';
-  const statusLabel = p.status === 'complete' ? 'Complete' : p.status === 'in-progress' ? 'In progress' : 'Project';
   return `
   <article class="project" data-project="${i}" aria-labelledby="pj-${p.n}-title" ${i === 0 ? '' : 'hidden'}>
-    <p class="pj-meta mono" data-a="fade"><span class="pj-n">Project ${p.n}<span class="dim"> / 08</span></span><span class="pj-term">${t(p.domain)}</span><span class="pj-status" data-status="${p.status}">${statusLabel}</span></p>
+    <p class="pj-meta mono" data-a="fade"><span class="pj-n">Project ${p.n}<span class="dim"> / 08</span></span><span class="pj-term">${t(p.domain)}</span><span class="pj-mark">${t(p.mark)}</span></p>
     <h3 id="pj-${p.n}-title" class="display md pj-title">
       <span class="sr-only">${t(p.title)}</span>
       <span aria-hidden="true">${p.titleLines.map((l) => line(t(l))).join('')}</span>
@@ -127,7 +159,6 @@ function project(p: Project, i: number) {
       ${extra}
       ${evidence}
     </dl>
-    <p class="pj-fig mono" data-a="fade"><span class="acc">Fig. ${p.n}</span> ${t(p.figure)}</p>
   </article>`;
 }
 
@@ -142,10 +173,13 @@ function builds() {
 <section id="builds" class="panel panel-builds" data-section="3" aria-labelledby="builds-title">
   <div class="builds-head">
     ${kicker(3, 'Projects')}
-    <h2 id="builds-title" class="sr-only">Projects — eight engineering projects across embedded, digital hardware and FPGA/RTL</h2>
+    ${title('builds-title', ['Engineering Projects'], 'Eight builds. *One* system.', 'sm')}
   </div>
   <div class="projects">${projects.map(project).join('')}</div>
-  <nav class="pidx" aria-label="Project index"><ol>${index}</ol></nav>
+  <div class="pnav">
+    <nav class="pidx" aria-label="Project index"><ol>${index}</ol></nav>
+    ${hnav('builds', projects.length, 'project', projects[0].title)}
+  </div>
 </section>`;
 }
 
@@ -165,15 +199,15 @@ function stack() {
   <h2 id="stack-title" class="sr-only">Technical stack</h2>
   <div class="stack-step" data-sub="0">
     ${kicker(4, 'Stack · Core')}
-    <p class="display md stack-title" aria-hidden="true">${line('The core.')}</p>
+    ${title('', ['Digital · Embedded', '· Programming'], 'The *core.*', 'md', 'div')}
     <p class="lede short" data-a="rise">Digital hardware and embedded systems, joined by the interfaces they share — and the languages that drive both.</p>
     <p class="stack-hint mono dim" data-a="fade">Joints mark where two groups meet</p>
     <div class="grp-list">${core.map(groupBlock).join('')}</div>
   </div>
   <div class="stack-step" data-sub="1" hidden>
     ${kicker(4, 'Stack · Support')}
-    <p class="display md stack-title" aria-hidden="true">${line('The ground')}${line('it stands on.')}</p>
-    <p class="lede short" data-a="rise">Physical hardware, signals and systems, and the tooling around them — with DSA as a supporting software layer, not the primary identity.</p>
+    ${title('', ['Hardware · Signals', '· Systems'], 'The ground it *stands on.*', 'md', 'div')}
+    <p class="lede short" data-a="rise">Physical hardware, signals and systems, and the tooling around them — with DSA as a supporting software layer.</p>
     <div class="grp-list">${sup.map(groupBlock).join('')}</div>
   </div>
   <p class="sr-only">Connections: ${joints.map((j) => `${groups.find((g) => g.key === j.a)?.name} and ${groups.find((g) => g.key === j.b)?.name} meet at ${j.via.replace(/→/g, 'to')}`).join('; ')}.</p>
@@ -193,10 +227,7 @@ function directions() {
 <section id="directions" class="panel panel-directions" data-section="5" aria-labelledby="directions-title">
   <div class="col col-left">
     ${kicker(5, 'Directions')}
-    <h2 id="directions-title" class="display lg">
-      <span class="sr-only">Foundation. Depth. Focus.</span>
-      <span aria-hidden="true">${line('Foundation.')}${line('Depth.')}${line('Focus.', 'acc-line')}</span>
-    </h2>
+    ${title('directions-title', ['Engineering', 'Directions'], 'Foundation. Depth. *Focus.*')}
     <p class="dir-story mono" data-a="fade">${t('Broad systems foundation → engineering depth → specialised focus')}</p>
     <p class="lede short" data-a="rise">Six engineering directions this profile works across — from firmware and FPGA/RTL to verification and hardware. The centre of gravity stays fixed: digital hardware and embedded firmware.</p>
   </div>
@@ -213,10 +244,7 @@ function contact() {
 <section id="contact" class="panel panel-contact" data-section="6" aria-labelledby="contact-title">
   <div class="contact-inner">
     ${kicker(6, 'Contact')}
-    <h2 id="contact-title" class="display xl contact-title">
-      <span class="sr-only">Let's build the next layer.</span>
-      <span aria-hidden="true">${line("Let's build")}${line('the next layer.')}</span>
-    </h2>
+    ${title('contact-title', ['Get in Touch'], "Let's build the *next layer.*", 'lg')}
     <div class="contact-row" data-a="rise">
       <a class="contact-mail" href="mailto:${esc(site.contact.email)}">${t(site.contact.email)}</a>
       <button class="btn-copy mono" type="button" data-copy="${esc(site.contact.email)}">Copy</button>
@@ -287,7 +315,7 @@ ${chrome()}
 <main id="main" class="stage" tabindex="-1">
 ${origin()}
 ${position()}
-${roadmap()}
+${skillDomains()}
 ${builds()}
 ${stack()}
 ${directions()}

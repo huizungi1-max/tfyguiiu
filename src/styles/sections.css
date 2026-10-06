@@ -30,6 +30,51 @@ html.js .col-left {
   transform: translateY(-50%);
 }
 
+/* Title system — every major page:
+   primary  = what the page contains (white display face)
+   subtitle = the cinematic line, smaller, led by an orange rule */
+.ttl {
+  display: block;
+  margin: 0 0 clamp(20px, 3vh, 34px);
+}
+.ttl-main {
+  display: block;
+  color: var(--ink);
+}
+.display.sm {
+  font-size: clamp(20px, 1.9vw, 34px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+.ttl-sub {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: clamp(12px, 1.9vh, 20px);
+  font-family: var(--f-display);
+  font-stretch: 112%;
+  font-weight: 500;
+  font-size: clamp(11.5px, 0.92vw, 15px);
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.ttl-sm .ttl-sub {
+  margin-top: 10px;
+  font-size: clamp(10.5px, 0.78vw, 13px);
+}
+.ttl-bar {
+  flex: none;
+  width: 22px;
+  height: 2px;
+  background: var(--acc);
+}
+.ttl-sub em {
+  font-style: normal;
+  color: var(--acc);
+}
+
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -93,7 +138,8 @@ html.js .origin-block {
   position: absolute;
   left: var(--body-right);
   right: var(--m);
-  bottom: calc(var(--top) - 8px);
+  /* the bottom row clears the corner "next" control; its trace ends in open space */
+  bottom: calc(var(--top) + 40px);
   z-index: 3;
 }
 .origin-head {
@@ -170,9 +216,11 @@ html:not(.js) .origin-name {
   font-weight: 600;
   color: var(--ink-3);
 }
-/* Circuit trace: a horizontal run that grows to fill, ending in a routed node pad. */
+/* Circuit trace: a short designed run ending in a routed node pad. Both runs share one
+   length (about half the old full-width span) and stop well short of the right edge. */
 .pl-trace {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
+  width: clamp(110px, 13vw, 240px);
   display: flex;
   align-items: center;
   min-width: 48px;
@@ -203,93 +251,243 @@ html:not(.js) .origin-name {
 }
 
 /* ==========================================================================
-   02 — Position
+   02 — Capabilities (three tiers)
    ========================================================================== */
-.panel-position .display {
-  margin-bottom: clamp(22px, 3.4vh, 40px);
-}
-.panel-position .lede {
-  max-width: 27em;
-}
 html.js .panel-position .col-left {
-  width: min(40vw, 640px);
+  width: min(44vw, 680px);
 }
-.legend {
-  display: flex;
-  gap: 22px;
-  margin-top: clamp(20px, 3vh, 34px);
-  font-family: var(--f-mono);
-  font-size: var(--fs-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-2);
+.tiers {
+  display: grid;
+  border-top: 1px solid var(--line);
 }
-.legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
+.tier {
+  position: relative;
+  display: grid;
+  grid-template-columns: 8.2em 1fr;
+  gap: 18px;
+  padding: clamp(14px, 2.1vh, 22px) 0;
+  border-bottom: 1px solid var(--line);
 }
-.legend i {
-  width: 18px;
+/* the core tier carries the accent: a short orange rule on its top edge */
+.tier-core::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 56px;
   height: 2px;
-  background: var(--ink-3);
-}
-.legend-core i {
   background: var(--acc);
 }
-/* the nine layers as text (document modes and upright screens) */
-.layer-list {
+.tier-k {
   display: flex;
-  flex-wrap: wrap;
-  row-gap: 3px;
-  margin-top: 14px;
-  font-family: var(--f-mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  line-height: 1.5;
+  gap: 10px;
+  padding-top: 3px;
+  color: var(--ink-2);
+}
+.tier-n {
   color: var(--ink-3);
 }
-.layer-list li:not(:last-child)::after {
-  content: '·';
-  margin: 0 0.5em;
-  color: var(--ink-4);
-}
-.layer-list .is-core {
+.tier-core .tier-k,
+.tier-core .tier-n {
   color: var(--acc);
+}
+.tier-areas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 22px;
+  font-family: var(--f-display);
+  font-stretch: 112%;
+  font-weight: 600;
+  font-size: clamp(15px, 1.3vw, 22px);
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.tier-areas > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  white-space: nowrap;
+}
+.tier-areas > span::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  background: var(--ink-4);
+}
+.tier-core .tier-areas > span::before {
+  background: var(--acc);
+}
+.tier-detail {
+  margin-top: 8px;
+  color: var(--ink-3);
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+}
+.tier-detail .dot {
+  color: var(--ink-4);
 }
 
 /* ==========================================================================
-   03 — Roadmap
+   03 — Skill domains (the orbit)
    ========================================================================== */
-html.js .roadmap-head {
+html.js .dom-head {
   position: absolute;
   left: var(--m);
   top: calc(var(--top) + 74px);
-  width: var(--col);
+  width: min(30vw, 440px);
 }
-.roadmap-head .display {
-  margin-bottom: clamp(16px, 2.4vh, 26px);
-}
-/* Capabilities — a compact list of the engineering domains, below the lede. */
-.domain-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 8px;
-  max-width: min(var(--col), 560px);
-  margin-top: clamp(16px, 2.4vh, 26px);
-  padding-top: 16px;
+/* the nine domains as a quiet vertical index: wayfinding and navigation at once */
+.dom-index ol {
+  display: grid;
   border-top: 1px solid var(--line);
 }
-.domain-list li {
-  font-size: 11px;
-  letter-spacing: 0.04em;
+.dom-btn {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.6em 1fr;
+  align-items: baseline;
+  width: 100%;
+  padding: clamp(5px, 0.9vh, 9px) 0;
+  text-align: left;
+  color: var(--ink-3);
+  transition: color 0.35s;
+}
+.dom-btn::after {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  width: 6px;
+  height: 2px;
+  background: var(--acc);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.5s var(--e-out);
+}
+.dom-n {
+  color: var(--ink-4);
+  transition: color 0.35s;
+}
+.dom-t {
+  font-family: var(--f-display);
+  font-stretch: 112%;
+  font-weight: 600;
+  font-size: clamp(11.5px, 0.86vw, 14px);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+.dom-btn:hover,
+.dom-btn:focus-visible {
   color: var(--ink-2);
-  padding: 5px 10px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+}
+.dom-btn[aria-current='true'] {
+  color: var(--ink);
+}
+.dom-btn[aria-current='true'] .dom-n {
+  color: var(--acc);
+}
+.dom-btn[aria-current='true']::after {
+  transform: scaleX(1);
+}
+/* document modes: the cards as plain text */
+.dom-doc {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+.grp-items-inline {
+  color: var(--ink-2);
+}
+html.js:not(.no-webgl) .dom-doc {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
+}
+html.is-dragging,
+html.is-dragging * {
+  cursor: grabbing !important;
+  user-select: none !important;
+}
+
+/* — sideways navigator (orbit + projects) ———————————————————————————— */
+html.js .panel-domains .hnav {
+  position: absolute;
+  left: var(--m);
+  bottom: var(--top);
+}
+.hnav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hnav-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink-2);
+  transition: color 0.3s, border-color 0.3s, opacity 0.3s;
+}
+.hnav-btn svg {
+  width: 15px;
+  height: 9px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+.hnav-btn:hover,
+.hnav-btn:focus-visible {
+  color: var(--ink);
+  border-color: var(--acc);
+}
+.hnav-btn:disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.hnav-pos {
+  min-width: 4.2em;
+  text-align: center;
+  color: var(--ink);
+}
+.hnav-cur {
+  color: var(--acc);
+}
+.hnav-name {
+  display: none;
+  color: var(--ink);
+}
+.hnav-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-left: 10px;
+  color: var(--ink-3);
+}
+.hnav-hint-ar {
+  display: inline-flex;
+  gap: 2px;
+  color: var(--acc);
+}
+.hnav-hint-ar svg {
+  width: 11px;
+  height: 7px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+/* once someone has moved, the hint has done its job */
+html.has-swiped .hnav-hint {
+  opacity: 0;
+  transition: opacity 0.8s;
 }
 
 /* ==========================================================================
@@ -300,17 +498,18 @@ html.js .builds-head {
   left: var(--m);
   top: calc(var(--top) + 74px);
 }
-/* stacked in one grid cell — no transforms, so the figure caption can sit in the viewport */
+/* stacked in one grid cell — titles fit the column instead of growing it */
 html.js .projects {
   position: absolute;
   left: var(--m);
-  top: calc(var(--top) + 110px);
+  top: calc(var(--top) + 196px);
   bottom: calc(var(--top) + 70px);
   width: min(var(--col), 600px);
   display: grid;
   /* the column never grows to fit a long title: titles fit the column instead */
   grid-template-columns: minmax(0, 1fr);
-  align-items: center;
+  /* hung under the header so the lit front edge of the tread passes beneath the copy */
+  align-items: start;
 }
 html.js .project {
   grid-area: 1 / 1;
@@ -329,7 +528,7 @@ html.js .project {
 .pj-n {
   color: var(--ink);
 }
-.pj-status {
+.pj-mark {
   padding: 4px 8px 3px;
   border: 1px solid var(--acc-dim);
   color: var(--acc);
@@ -366,27 +565,17 @@ html.js .project {
 .pj-row dt {
   padding-top: 6px;
 }
-.pj-fig {
-  color: var(--ink-3);
-  letter-spacing: 0.04em;
-  text-transform: none;
-}
-html.js .pj-fig {
-  position: fixed;
-  right: calc(var(--m) + 44px);
-  bottom: calc(var(--top) + 60px);
-  max-width: 26em;
-  text-align: right;
-}
-.pj-fig .acc {
-  margin-right: 0.6em;
-}
-
-/* project index — eight quiet numerals */
-html.js .pidx {
+/* project index — eight quiet numerals, with the sideways navigator beside them */
+html.js .pnav {
   position: absolute;
   left: var(--m);
   bottom: calc(var(--top) + 4px);
+  display: flex;
+  align-items: flex-end;
+  gap: 22px;
+}
+.pnav .hnav {
+  padding-bottom: 2px;
 }
 .pidx ol {
   display: flex;
@@ -465,7 +654,7 @@ html.js .stack-step {
   position: absolute;
   left: var(--m);
   top: calc(var(--top) + 74px);
-  width: min(40vw, 620px);
+  width: min(29vw, 450px);
 }
 .stack-step .lede.short {
   max-width: 23em;
@@ -506,9 +695,6 @@ html.js .stack-step {
   margin: 0 0.55em;
   color: var(--ink-4);
 }
-.stack-title {
-  margin-bottom: clamp(16px, 2.4vh, 26px);
-}
 .stack-hint {
   margin-top: 22px;
   display: flex;
@@ -526,9 +712,6 @@ html.js .stack-step {
 /* ==========================================================================
    06 — Directions
    ========================================================================== */
-.panel-directions .display {
-  margin-bottom: clamp(18px, 2.6vh, 28px);
-}
 .dir-story {
   color: var(--ink);
   margin-bottom: 16px;
@@ -547,9 +730,6 @@ html.js .panel-directions .col-left {
   top: calc(var(--top) + 74px);
   transform: none;
 }
-.acc-line .ln-i {
-  color: var(--acc);
-}
 
 /* ==========================================================================
    07 — Contact
@@ -559,9 +739,6 @@ html.js .contact-inner {
   left: var(--m);
   right: var(--m);
   bottom: calc(var(--top) + 86px);
-}
-.contact-title {
-  margin-bottom: clamp(22px, 3.6vh, 40px);
 }
 .contact-row {
   display: flex;

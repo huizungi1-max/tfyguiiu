@@ -50,21 +50,52 @@ html.intro .wt-ch {
   }
 }
 
-/* — Tread lettering ———————————————————————————————————————————————— */
-.wt-tread {
-  display: grid;
-  justify-items: start;
-  gap: 4px;
-  color: rgba(236, 234, 228, 0.86);
-  transition: color 0.5s;
+/* — Skill-domain cards (on the orbit) ——————————————————————————————— */
+/* 100 CSS px = 1 world unit: the card face is 6.4 × 4.0 units, the type sits inside it. */
+.wt-card {
+  width: 540px;
+  white-space: normal;
+  color: var(--ink);
 }
-.wt-t-domain {
+.wt-card-k {
+  display: flex;
+  gap: 10px;
+  margin: 0 0 26px;
+  font-family: var(--f-mono);
+  font-size: 17px;
+  letter-spacing: 0.12em;
+  color: rgba(236, 234, 228, 0.42);
+}
+.wt-card-n {
+  color: var(--acc);
+}
+.wt-card-name {
+  margin: 0;
   font-stretch: 125%;
-  font-weight: 600;
-  font-size: 44px;
-  line-height: 0.9;
-  letter-spacing: -0.02em;
-  color: rgba(236, 234, 228, 0.82);
+  font-weight: 640;
+  font-size: 58px;
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+.wt-card-rule {
+  display: block;
+  width: 64px;
+  height: 3px;
+  margin: 26px 0 20px;
+  background: var(--acc);
+}
+.wt-card-skills {
+  margin: 0;
+  font-family: var(--f-mono);
+  font-size: 19px;
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+  color: rgba(236, 234, 228, 0.72);
+}
+.wt-card-skills i {
+  font-style: normal;
+  color: rgba(236, 234, 228, 0.3);
 }
 
 /* — Capability plan ———————————————————————————————————————————————— */

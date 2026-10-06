@@ -2,8 +2,9 @@ import type { ChangeEvent, Director } from '../world/director';
 import type { WorldType } from '../world/worldType';
 import type { World } from '../world/world';
 import type { Sound } from '../audio/sound';
-import { steps, firstStepOfSection, type Step } from '../nav/steps';
-import { sections, projects } from '../content/content';
+import { steps, firstStepOfSection, isHorizontal, type Step } from '../nav/steps';
+import type { Axis } from '../nav/input';
+import { sections, projects, domains } from '../content/content';
 import { fitDisplay } from './fit';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -28,10 +29,12 @@ export class UI {
   private hintHidden = false;
   /** The parts currently on screen — refitted when the viewport or fonts change. */
   private live: Scope = [];
+  /** Navigation by axis (set by the app, which owns the navigation rule). */
+  onNav: (axis: Axis, dir: 1 | -1) => void = () => {};
 
   constructor(
     private director: Director,
-    private world: World,
+    _world: World,
     _type: WorldType,
     private sound: Sound,
   ) {
@@ -69,9 +72,11 @@ export class UI {
     if (step.kind === 'build') {
       const pj = panel.querySelector(`[data-project="${step.sub}"]`) as HTMLElement;
       const parts: Scope = [pj];
-      if (whole) parts.unshift(panel.querySelector('.builds-head') as HTMLElement, panel.querySelector('.pidx') as HTMLElement);
+      if (whole) parts.unshift(panel.querySelector('.builds-head') as HTMLElement, panel.querySelector('.pnav') as HTMLElement);
       return { root: panel, parts };
     }
+    // The orbit's cards live in the world: moving between them changes no page copy.
+    if (step.kind === 'roadmap') return { root: panel, parts: whole ? [panel] : [] };
     if (step.kind === 'stack') {
       const sub = panel.querySelector(`[data-sub="${step.sub}"]`) as HTMLElement;
       return { root: panel, parts: [sub] };
@@ -91,6 +96,7 @@ export class UI {
   }
 
   private enter(parts: Scope, delay: number, dir: 1 | -1, reduced: boolean) {
+    if (!parts.length) return;
     fitDisplay(parts);
     this.live = parts;
     const { lines, others } = this.animEls(parts);
@@ -203,7 +209,6 @@ export class UI {
     this.show(panel);
     this.enter(this.scopeFor(s, true).parts, delay, 1, document.documentElement.classList.contains('reduced'));
     this.updateChrome(s);
-    if (s.kind === 'roadmap') this.applyTermAccent();
   }
 
   private prepareSubs(s: Step) {
@@ -238,7 +243,7 @@ export class UI {
       if (focusInside) toPanel.focus({ preventScroll: true });
     }
 
-    if (to.kind === 'roadmap') this.applyTermAccent();
+    if (sameSection && isHorizontal(to.section)) document.documentElement.classList.add('has-swiped');
     if (!e.instant && from.index !== to.index) this.sound.whoosh(e.duration, sameSection ? 0.7 : 1);
     if (from.index !== to.index && !this.hintHidden) {
       this.hintHidden = true;
@@ -260,7 +265,7 @@ export class UI {
     const cur = document.querySelector('[data-ind-cur]');
     const lab = document.querySelector('[data-ind-label]');
     if (cur) cur.textContent = pad(s.section + 1);
-    if (lab) lab.textContent = s.kind === 'build' ? `${sec.label} ${pad(s.sub + 1)}` : sec.label;
+    if (lab) lab.textContent = sec.horizontal ? `${sec.label} ${pad(s.sub + 1)}` : sec.label;
     document.querySelectorAll<HTMLElement>('.rail-btn').forEach((b) => {
       if (Number(b.dataset.gotoSection) === s.section) b.setAttribute('aria-current', 'step');
       else b.removeAttribute('aria-current');
@@ -271,11 +276,25 @@ export class UI {
       b.setAttribute('aria-current', String(s.kind === 'build' && i === s.sub));
       b.classList.toggle('is-past', s.kind === 'build' && i < s.sub);
     });
+    document.querySelectorAll<HTMLElement>('.dom-btn').forEach((b) => b.setAttribute('aria-current', String(s.kind === 'roadmap' && Number(b.dataset.gotoDomain) === s.sub)));
+    // sideways navigator: position, active name, ends
+    document.querySelectorAll<HTMLElement>('[data-hnav]').forEach((nav) => {
+      const mine = nav.dataset.hnav === sec.id;
+      if (!mine) return;
+      const cur = nav.querySelector('[data-hnav-cur]');
+      const name = nav.querySelector('[data-hnav-name]');
+      if (cur) cur.textContent = pad(s.sub + 1);
+      if (name) name.textContent = s.kind === 'build' ? projects[s.sub].title : domains[s.sub].name;
+      const wraps = sec.id === 'domains';
+      nav.querySelector<HTMLButtonElement>('[data-hstep="-1"]')!.disabled = !wraps && s.sub === 0;
+      nav.querySelector<HTMLButtonElement>('[data-hstep="1"]')!.disabled = !wraps && s.sub === sec.steps - 1;
+    });
     // next affordance names the destination of the next gesture
     const wrap = document.querySelector('[data-next-wrap]') as HTMLElement;
     const label = document.querySelector('[data-next-label]') as HTMLElement;
     const k = document.querySelector('[data-next-k]') as HTMLElement;
-    const next = steps[s.index + 1];
+    // Horizontal sections: "next" is always the next page — sideways has its own controls.
+    const next = isHorizontal(s.section) ? steps[firstStepOfSection(s.section + 1)] : steps[s.index + 1];
     if (!next) {
       wrap.classList.add('is-end');
       label.textContent = 'Origin';
@@ -283,8 +302,7 @@ export class UI {
     } else {
       wrap.classList.remove('is-end');
       k.textContent = 'Next';
-      if (next.section === s.section && next.kind === 'build') label.textContent = `Build ${pad(next.sub + 1)}`;
-      else if (next.section === s.section && next.kind === 'stack') label.textContent = 'Support';
+      if (next.section === s.section && next.kind === 'stack') label.textContent = 'Support';
       else label.textContent = sections[next.section].label;
     }
     document.documentElement.dataset.step = s.kind;
@@ -293,19 +311,10 @@ export class UI {
   private say(s: Step) {
     const sec = sections[s.section];
     let t = `Section ${s.section + 1} of ${sections.length}: ${sec.label}.`;
-    if (s.kind === 'build') t += ` Project ${projects[s.sub].n}: ${projects[s.sub].title}.`;
+    if (s.kind === 'build') t += ` Project ${projects[s.sub].n} of ${projects.length}: ${projects[s.sub].title}.`;
+    if (s.kind === 'roadmap') t += ` ${domains[s.sub].name}: ${domains[s.sub].skills.join(', ')}.`;
     if (s.kind === 'stack') t += s.sub === 0 ? ' Core.' : ' Support.';
     this.announce.textContent = t;
-  }
-
-  /* ---------------------------------------------------------------------- */
-  /* Capabilities                                                              */
-  /* ---------------------------------------------------------------------- */
-
-  /** The capability climb lights its plates evenly — a steady presence, no selection. */
-  private applyTermAccent() {
-    const a = new Array(9).fill(0.5);
-    this.world.plates.setAccent(a);
   }
 
   /* ---------------------------------------------------------------------- */
@@ -315,7 +324,7 @@ export class UI {
   private bind() {
     document.addEventListener('click', (e) => {
       const t = e.target as HTMLElement;
-      const el = t.closest<HTMLElement>('[data-goto-step],[data-goto-section],[data-goto-project],[data-next],[data-copy],[data-sound],[data-menu-open],[data-menu-close]');
+      const el = t.closest<HTMLElement>('[data-goto-step],[data-goto-section],[data-goto-project],[data-goto-domain],[data-hstep],[data-next],[data-copy],[data-sound],[data-menu-open],[data-menu-close]');
       if (!el) {
         if (this.menuOpen && t === this.menu) this.closeMenu();
         return;
@@ -328,9 +337,13 @@ export class UI {
         this.director.goTo(firstStepOfSection(Number(el.dataset.gotoSection)));
       } else if (el.dataset.gotoProject !== undefined) {
         this.director.goTo(firstStepOfSection(3) + Number(el.dataset.gotoProject));
+      } else if (el.dataset.gotoDomain !== undefined) {
+        this.director.goTo(firstStepOfSection(2) + Number(el.dataset.gotoDomain));
+      } else if (el.dataset.hstep !== undefined) {
+        this.onNav('x', Number(el.dataset.hstep) < 0 ? -1 : 1);
       } else if (el.dataset.next !== undefined) {
-        const i = this.director.index;
-        this.director.goTo(i + 1 < steps.length ? i + 1 : 0);
+        if (this.director.index >= steps.length - 1) this.director.goTo(0);
+        else this.onNav('y', 1);
       } else if (el.dataset.copy !== undefined) {
         void this.copy(el);
       } else if (el.dataset.sound !== undefined) {

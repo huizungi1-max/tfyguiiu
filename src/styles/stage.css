@@ -165,7 +165,11 @@ html:not(.js) .ln {
 html:not(.js) .col-left {
   width: auto;
 }
-html:not(.js) .chrome-right {
+html:not(.js) .chrome-right,
+html:not(.js) .hnav,
+html:not(.js) .dom-index,
+html.no-webgl .hnav,
+html.no-webgl .dom-index {
   display: none;
 }
 html:not(.js) .origin-foot {
@@ -226,8 +230,7 @@ html.no-webgl .stack-step[hidden] {
   display: block !important;
 }
 /* group lists: the plan's cards carry them on large screens; elsewhere they are plain text */
-html.js:not(.no-webgl):not(.portrait) .grp-list,
-html.js:not(.no-webgl):not(.portrait) .layer-list {
+html.js:not(.no-webgl):not(.portrait) .grp-list {
   position: absolute;
   width: 1px;
   height: 1px;

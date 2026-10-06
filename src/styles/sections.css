@@ -222,7 +222,9 @@ html:not(.js) .origin-name {
   flex: 0 1 auto;
   width: clamp(90px, 10vw, 180px);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  /* drop the run to the glyph's bottom edge rather than the row's optical centre */
+  margin-bottom: 0.08em;
   min-width: 48px;
 }
 .pl-line {

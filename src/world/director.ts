@@ -68,7 +68,6 @@ export class Director {
     this.fromShot = cloneShot(this.target.shot);
     this.fromForm = cloneFormation(this.target.formation);
     world.plates.apply(this.target.formation);
-    world.plates.setSkin(first.kind === 'origin' ? 4 : -1);
     world.rig.set(this.target.shot);
     world.rig.snap();
   }
@@ -125,8 +124,6 @@ export class Director {
     this.duration = this.reduced ? 0.8 : this.spec.duration;
     this.world.plates.setStripMode(this.target.strip);
     this.world.plates.setAccent(this.target.accent);
-    // The 5th slab (index 4) wears the orange skin on the origin monolith only.
-    this.world.plates.setSkin(toStep.kind === 'origin' ? 4 : -1);
 
     if (opts.instant) {
       this.t = 1;

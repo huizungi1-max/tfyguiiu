@@ -3,7 +3,7 @@ import type { WorldType } from '../world/worldType';
 import type { World } from '../world/world';
 import type { Sound } from '../audio/sound';
 import { steps, firstStepOfSection, type Step } from '../nav/steps';
-import { sections, projects, terms, currentTermIndex } from '../content/content';
+import { sections, projects, terms } from '../content/content';
 import { fitDisplay } from './fit';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -295,7 +295,7 @@ export class UI {
   private say(s: Step) {
     const sec = sections[s.section];
     let t = `Section ${s.section + 1} of ${sections.length}: ${sec.label}.`;
-    if (s.kind === 'build') t += ` Build ${projects[s.sub].n}: ${projects[s.sub].title}.`;
+    if (s.kind === 'build') t += ` Project ${projects[s.sub].n}: ${projects[s.sub].title}.`;
     if (s.kind === 'stack') t += s.sub === 0 ? ' Core.' : ' Support.';
     this.announce.textContent = t;
   }
@@ -305,20 +305,11 @@ export class UI {
   /* ---------------------------------------------------------------------- */
 
   private setupRoadmap() {
-    const now = currentTermIndex();
-    const start = Math.max(0, Math.min(terms.length - 1, now));
     document.querySelectorAll<HTMLElement>('.term-btn').forEach((b) => {
       const i = Number(b.dataset.term);
-      b.classList.toggle('is-now', i === now);
-      if (i === now) b.setAttribute('aria-label', `${terms[i].id}, ${terms[i].date} — current term by calendar`);
+      b.setAttribute('aria-label', `Stage ${terms[i].id}: ${terms[i].stage}`);
     });
-    document.querySelectorAll<HTMLElement>('[data-term-panel]').forEach((p) => {
-      const flag = p.querySelector('[data-now-flag]') as HTMLElement | null;
-      if (flag) flag.hidden = Number(p.dataset.termPanel) !== now;
-    });
-    this.selectTerm(start, false);
-    const pos = document.querySelector('[data-roadmap-pos]');
-    if (pos && now >= 0 && now < terms.length) pos.textContent = `Roadmap position · ${terms[now].id} ${terms[now].date} (by calendar)`;
+    this.selectTerm(0, false);
   }
 
   selectTerm(i: number, animate = true) {

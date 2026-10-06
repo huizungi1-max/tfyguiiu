@@ -6,12 +6,14 @@
  * for the 3D typography.
  *
  * Integrity rule: nothing here claims completed work, employment, results or
- * measurements. Projects are a planned engineering roadmap (Sep 2026 → May
- * 2029). When a build produces real evidence, update its `status` and add an
+ * measurements. The projects form an engineering progression — a technical
+ * ladder, not a personal study schedule. No semester dates, study hours, exam
+ * or application targets, or private planning appear anywhere on the site.
+ * When a build produces real evidence, update its `status` and add an
  * `evidence` link — the UI will pick it up.
  */
 
-export type Status = 'roadmap' | 'in-progress' | 'complete';
+export type Status = 'planned' | 'in-progress' | 'complete';
 
 export interface ContactLink {
   label: string;
@@ -21,12 +23,12 @@ export interface ContactLink {
 
 export const site = {
   name: 'Kaushal',
-  field: 'Electronics Systems Engineering',
-  fieldLong: 'Electronics Systems / Electronics & Communication Engineering',
-  primary: 'Digital Hardware / FPGA-RTL + Embedded Firmware',
+  field: 'Electronic Systems Engineering',
+  fieldLong: 'BS Electronic Systems, IIT Madras · B.Tech Electronics & Communication Engineering',
+  academic: 'BS Electronic Systems, IIT Madras + B.Tech Electronics & Communication Engineering',
+  primary: 'Embedded Systems + Digital Hardware / FPGA-RTL',
   positioning:
-    'Electronics Systems engineer developing depth across digital hardware, FPGA/RTL and embedded firmware, with supporting capability in Linux, PCB/hardware debugging, DSP, sensors, control and programming.',
-  span: { from: 'SEP 2026', to: 'MAY 2029' },
+    'Embedded and digital hardware engineer developing capability across embedded firmware, hardware/PCB, FPGA/RTL, embedded Linux and semiconductor-oriented digital design — with DSP, sensors, control, communication and programming as supporting ground.',
   /**
    * CONTACT — replace the placeholder email with your real address.
    * Optional links render automatically once a URL is filled in.
@@ -40,9 +42,9 @@ export const site = {
     ] as ContactLink[],
   },
   meta: {
-    title: 'Kaushal — Digital Hardware / FPGA-RTL + Embedded Firmware',
+    title: 'Kaushal — Embedded Systems + Digital Hardware / FPGA-RTL',
     description:
-      'Kaushal — Electronics Systems engineer developing depth across digital hardware, FPGA/RTL and embedded firmware. An evidence-driven engineering roadmap, Sep 2026 → May 2029.',
+      'Kaushal — BS Electronic Systems (IIT Madras) and B.Tech ECE. Embedded and digital hardware engineer developing depth across firmware, FPGA/RTL, hardware/PCB and semiconductor-oriented digital design.',
   },
 };
 
@@ -59,8 +61,8 @@ export interface SectionDef {
 export const sections: SectionDef[] = [
   { id: 'origin', label: 'Origin', steps: 1 },
   { id: 'position', label: 'Position', steps: 1 },
-  { id: 'roadmap', label: 'Roadmap', steps: 1 },
-  { id: 'builds', label: 'Builds', steps: 8 },
+  { id: 'roadmap', label: 'Progression', steps: 1 },
+  { id: 'builds', label: 'Projects', steps: 8 },
   { id: 'stack', label: 'Stack', steps: 2 },
   { id: 'directions', label: 'Directions', steps: 1 },
   { id: 'contact', label: 'Contact', steps: 1 },
@@ -89,101 +91,88 @@ export const layers: Layer[] = [
 ];
 
 /* ------------------------------------------------------------------------ */
-/* 03 — Roadmap: nine academic terms                                         */
+/* 03 — Progression: an engineering ladder (not a study schedule)            */
 /* ------------------------------------------------------------------------ */
 
+/**
+ * The progression describes a technical arc, foundations → integration. Each
+ * stage names the knowledge domains it draws on and the project that embodies
+ * it. There are no semester dates, study hours or personal planning here — the
+ * `stage` label is the identity; `domains` are academic/technical knowledge
+ * areas; `build` names the project that expresses the stage.
+ */
 export interface Term {
-  id: string; // T1..T9
-  date: string; // display
-  start: [number, number]; // [year, monthIndex 0-11]
-  academic: string[];
-  technical: string[];
-  technicalLabel?: string;
-  build: string;
+  id: string; // stage number, S1..S9
+  stage: string; // the engineering stage name (display)
+  domains: string[]; // knowledge domains this stage draws on
+  domainsLabel?: string;
+  build: string; // the project that expresses the stage
   buildRef?: number; // index into projects
 }
 
 export const terms: Term[] = [
   {
-    id: 'T1',
-    date: 'SEP 2026',
-    start: [2026, 8],
-    academic: ['EE2101 Signals & Systems', 'CS1002 Python', 'EE2106 Computer Organisation'],
-    technical: ['C pointers / structs / bitwise', 'Python NumPy', 'Git / GitHub', 'Linux CLI', 'Digital / circuit repair'],
-    build: 'STM32 UART + LED control',
+    id: 'S1',
+    stage: 'Foundations',
+    domains: ['C / pointers / bitwise', 'Python', 'Computer Organisation', 'Signals & Systems', 'Git / GitHub', 'Linux CLI'],
+    build: 'Programming, tooling and systems groundwork',
+  },
+  {
+    id: 'S2',
+    stage: 'Embedded Firmware',
+    domains: ['Embedded C', 'STM32', 'UART', 'GPIO', 'Firmware fundamentals', 'Debugging'],
+    build: 'STM32 UART echo + LED control',
     buildRef: 0,
   },
   {
-    id: 'T2',
-    date: 'JAN 2027',
-    start: [2027, 0],
-    academic: ['EE2102 Analog Electronic Systems + lab', 'EE2103 Digital System Design + lab'],
-    technical: ['Op-amp circuits', 'BJT / MOSFET basics', 'Verilog RTL', 'Testbenches', 'Icarus / GTKWave', 'LTspice', 'Oscilloscope'],
-    build: 'Digital + analog thermometer',
+    id: 'S3',
+    stage: 'Mixed Analog / Digital',
+    domains: ['Analog Electronic Systems', 'Digital System Design', 'ADC', 'Verilog RTL', 'LTspice', 'Oscilloscope'],
+    build: 'Digital thermometer with analog chain',
     buildRef: 1,
   },
   {
-    id: 'T3',
-    date: 'MAY 2027',
-    start: [2027, 4],
-    academic: ['EE3101 DSP', 'EE2105 Testing & Measurement', 'EE3103 Sensors + lab'],
-    technical: ['Sampling', 'DFT / FFT', 'FIR / IIR basics', 'Sensor interfaces', 'ADC', 'UART / I²C / SPI', 'Measurement', 'Debugging'],
-    build: 'IMU / sensor logger + real-time FIR pipeline',
+    id: 'S4',
+    stage: 'Sensing + Signal Processing',
+    domains: ['DSP', 'Sampling', 'FIR / IIR', 'Sensors', 'Testing & Measurement', 'UART / I²C / SPI'],
+    build: 'IMU logger + real-time FIR',
     buildRef: 2,
   },
   {
-    id: 'T4',
-    date: 'SEP 2027',
-    start: [2027, 8],
-    academic: ['EE4101 Embedded Linux & FPGAs + lab', 'EE3104 EMFT', 'MA4101 Math II'],
-    technical: ['Embedded Linux userspace', 'Cross-compilation', 'Serial console', 'FPGA synthesis', 'Verilog / SystemVerilog', 'Constraints', 'Timing', 'Board bring-up'],
-    build: 'FPGA UART / display subsystem',
+    id: 'S5',
+    stage: 'Digital Hardware / FPGA-RTL',
+    domains: ['Embedded Linux & FPGAs', 'Verilog / SystemVerilog', 'Synthesis', 'Constraints', 'Timing', 'Board bring-up', 'EMFT', 'Mathematics'],
+    build: 'FPGA UART receiver + display',
     buildRef: 3,
   },
   {
-    id: 'T5',
-    date: 'JAN 2028',
-    start: [2028, 0],
-    academic: ['EE4103 Communication Systems', 'EE3102 Control', 'MA3101 Probability & Statistics'],
-    technical: ['FreeRTOS tasks', 'Queues', 'Semaphores', 'Timers', 'Interrupts', 'CAN', 'Control / PID', 'Python test automation', 'C++ basics / STL'],
-    build: 'Multi-sensor FreeRTOS control node with PID',
+    id: 'S6',
+    stage: 'Real-Time Systems',
+    domains: ['Communication Systems', 'Control', 'Probability & Statistics', 'FreeRTOS', 'CAN', 'PID', 'Python test automation', 'C++'],
+    build: 'FreeRTOS multi-sensor + PID node',
     buildRef: 4,
   },
   {
-    id: 'T6',
-    date: 'MAY 2028',
-    start: [2028, 4],
-    academic: ['EE3106 Semiconductor Devices & VLSI', 'EE3107 Analog Circuits', 'EE4102 Product Design'],
-    technical: ['KiCad schematic / PCB', 'BOM', 'DRC', 'Power budgeting', 'Decoupling', 'Protection', 'Oscilloscope', 'Logic analyzer', 'Test plan', 'Product lifecycle'],
-    build: 'Custom PCB supporting the evolving embedded system',
+    id: 'S7',
+    stage: 'Hardware / PCB',
+    domains: ['Semiconductor Devices & VLSI', 'Analog Circuits', 'Product Design', 'KiCad', 'DRC', 'Power budgeting', 'Instrumentation'],
+    build: 'Custom STM32 sensor PCB',
     buildRef: 5,
   },
   {
-    id: 'T7',
-    date: 'SEP 2028',
-    start: [2028, 8],
-    academic: ['EE5102 Digital IC Design', 'EE5101 IoT', 'GN3001 Professional Growth'],
-    technical: ['SystemVerilog', 'Verification architecture', 'Assertions', 'Coverage concepts', 'Synthesis / timing', 'AMBA basics', 'Python / Bash / Tcl'],
-    build: 'RTL subsystem + verification',
+    id: 'S8',
+    stage: 'RTL + Verification',
+    domains: ['Digital IC Design', 'IoT', 'SystemVerilog', 'Assertions', 'Coverage concepts', 'AMBA', 'Synthesis / timing', 'Python / Bash / Tcl'],
+    build: 'RTL SPI / UART-FIFO + testbench',
     buildRef: 6,
   },
   {
-    id: 'T8',
-    date: 'JAN 2029',
-    start: [2029, 0],
-    academic: ['EE5103 Power Management', 'EE4105 / EE4106 Comprehensive exams', 'Apprenticeship'],
-    technicalLabel: 'Direction',
-    technical: ['UVM basics for verification, where relevant', 'or BSP / driver / JTAG / GDB for firmware', 'Stronger C / C++', 'Interview debugging'],
-    build: 'Integrated flagship capstone',
+    id: 'S9',
+    stage: 'System Integration',
+    domainsLabel: 'Draws on',
+    domains: ['Power Management', 'Embedded systems', 'Digital hardware', 'FPGA / RTL', 'PCB', 'Communication', 'Verification', 'System architecture'],
+    build: 'Flagship integrated system',
     buildRef: 7,
-  },
-  {
-    id: 'T9',
-    date: 'MAY 2029',
-    start: [2029, 4],
-    academic: ['EE4107 Comprehensive', 'Apprenticeship', 'EE3999 / EE4999 if required'],
-    technical: ['Core revision', 'Interview-level digital / analog / embedded depth', 'Final DSA revision', 'Presentation skills'],
-    build: 'Polish flagship — measurements, demo, README, diagrams, test evidence',
   },
 ];
 
@@ -195,8 +184,7 @@ export interface Project {
   n: string; // 01..08
   title: string;
   titleLines: string[]; // display line breaks
-  term: string; // T1..
-  date: string;
+  stage: string; // the progression stage this project belongs to
   concept: string;
   stack: string[];
   focus: string[];
@@ -211,101 +199,92 @@ export interface Project {
 export const projects: Project[] = [
   {
     n: '01',
-    title: 'STM32 UART + LED Control',
-    titleLines: ['STM32 UART', '+ LED Control'],
-    term: 'T1',
-    date: 'SEP 2026',
-    concept: 'A foundational embedded firmware system demonstrating MCU programming, UART communication and GPIO control.',
+    title: 'STM32 UART Echo + LED Control',
+    titleLines: ['STM32 UART Echo', '+ LED Control'],
+    stage: 'Embedded Firmware',
+    concept: 'The foundational embedded project: MCU programming, UART echo communication and GPIO-driven LED control.',
     stack: ['C', 'Embedded C', 'STM32', 'UART', 'GPIO'],
     focus: ['Firmware fundamentals', 'Debugging'],
     figure: 'Illustrative — one serial frame carrying the character “K”.',
-    status: 'roadmap',
+    status: 'planned',
   },
   {
     n: '02',
-    title: 'Analog + Digital Thermometer',
-    titleLines: ['Analog + Digital', 'Thermometer'],
-    term: 'T2',
-    date: 'JAN 2027',
-    concept: 'A combined analog/digital measurement system that builds on the first embedded stage.',
+    title: 'Digital Thermometer with Analog Chain',
+    titleLines: ['Digital Thermometer', 'with Analog Chain'],
+    stage: 'Mixed Analog / Digital',
+    concept: 'Progression from embedded fundamentals into mixed analog/digital measurement — an analog front end feeding a digital controller.',
     stack: ['Analog circuits', 'Digital design', 'ADC', 'Verilog controller', 'Display / interface', 'LTspice', 'Testbench', 'Oscilloscope'],
     focus: ['Measurement', 'Analog + digital'],
     figure: 'Illustrative — one quantity, as a continuous curve and its quantised twin.',
-    status: 'roadmap',
+    status: 'planned',
   },
   {
     n: '03',
-    title: 'IMU / Sensor Logger + FIR',
-    titleLines: ['IMU / Sensor', 'Logger + FIR'],
-    term: 'T3',
-    date: 'MAY 2027',
-    concept: 'A sensor/IMU data acquisition and processing system with signal-processing capability — a real-time FIR pipeline.',
+    title: 'IMU Logger + Real-Time FIR',
+    titleLines: ['IMU Logger', '+ Real-Time FIR'],
+    stage: 'Sensing + Signal Processing',
+    concept: 'Sensor acquisition joined to embedded signal processing: an IMU/sensor logger with a real-time FIR pipeline.',
     stack: ['STM32 peripherals', 'IMU', 'Sensors', 'ADC / interface', 'UART', 'I²C', 'SPI', 'FIR filtering', 'DSP'],
     focus: ['Measurement', 'Debugging', 'Signal processing'],
     figure: 'Illustrative — an orientation frame beside a low-pass FIR impulse response.',
-    status: 'roadmap',
+    status: 'planned',
   },
   {
     n: '04',
-    title: 'FPGA UART / Display Subsystem',
-    titleLines: ['FPGA UART /', 'Display Subsystem'],
-    term: 'T4',
-    date: 'SEP 2027',
-    concept: 'A digital hardware system demonstrating progression from RTL design through FPGA implementation.',
+    title: 'FPGA UART Receiver + Display',
+    titleLines: ['FPGA UART Receiver', '+ Display'],
+    stage: 'Digital Hardware / FPGA-RTL',
+    concept: 'Progression into FPGA/RTL engineering: a UART receiver and display subsystem taken from RTL through FPGA implementation.',
     stack: ['FPGA', 'Verilog', 'RTL', 'UART', 'Display subsystem', 'Simulation', 'Synthesis', 'Constraints', 'Timing'],
     focus: ['FPGA bring-up', 'Linux / MCU interface concepts'],
     figure: 'Illustrative — an RTL description resolving into implemented fabric.',
-    status: 'roadmap',
+    status: 'planned',
   },
   {
     n: '05',
-    title: 'FreeRTOS Multi-Sensor + PID Control Node',
-    titleLines: ['FreeRTOS Multi-Sensor', '+ PID Control Node'],
-    term: 'T5',
-    date: 'JAN 2028',
-    concept: 'A real-time embedded control system combining multiple sensors, RTOS concepts and control logic.',
+    title: 'FreeRTOS Multi-Sensor + PID Node',
+    titleLines: ['FreeRTOS Multi-Sensor', '+ PID Node'],
+    stage: 'Real-Time Systems',
+    concept: 'Real-time embedded and control-system progression: multiple sensors coordinated under an RTOS with closed-loop PID control.',
     stack: ['FreeRTOS', 'Tasks', 'Queues', 'Semaphores', 'Timers', 'Interrupts', 'CAN', 'PID', 'Python test automation', 'C++'],
     focus: ['Control systems', 'Real-time design'],
     figure: 'Illustrative — time-sliced tasks beneath a closed-loop step response.',
-    status: 'roadmap',
+    status: 'planned',
   },
   {
     n: '06',
-    title: 'Custom Sensor / Control PCB',
-    titleLines: ['Custom Sensor /', 'Control PCB'],
-    term: 'T6',
-    date: 'MAY 2028',
-    concept: 'A custom hardware platform supporting the evolving embedded system.',
+    title: 'Custom STM32 Sensor PCB',
+    titleLines: ['Custom STM32', 'Sensor PCB'],
+    stage: 'Hardware / PCB',
+    concept: 'Progression into actual hardware/PCB engineering: a custom STM32 sensor board, carried from schematic through bring-up.',
     stack: ['KiCad', 'Schematics', 'PCB design', 'BOM', 'DRC', 'Power budgeting', 'Decoupling', 'Protection'],
     focus: ['Instrumentation', 'Oscilloscope', 'Logic analyzer', 'Hardware bring-up', 'Measurement', 'Revision'],
     figure: 'Illustrative — a board with probe points. No real layout implied.',
-    status: 'roadmap',
+    status: 'planned',
   },
   {
     n: '07',
-    title: 'RTL Subsystem + Verification',
-    titleLines: ['RTL Subsystem', '+ Verification'],
-    term: 'T7',
-    date: 'SEP 2028',
-    concept: 'An advanced RTL/verification project demonstrating progression toward semiconductor and digital hardware roles.',
-    stack: ['SystemVerilog', 'RTL', 'Testbenches', 'Assertions', 'Coverage concepts', 'AMBA', 'Scripting', 'Synthesis', 'Timing'],
+    title: 'RTL SPI / UART-FIFO + Testbench',
+    titleLines: ['RTL SPI / UART-FIFO', '+ Testbench'],
+    stage: 'RTL + Verification',
+    concept: 'Advanced RTL and verification progression: SPI and UART-FIFO blocks in SystemVerilog, exercised by a self-checking testbench.',
+    stack: ['SystemVerilog', 'RTL', 'SPI', 'UART / FIFO', 'Testbenches', 'Assertions', 'Coverage concepts', 'AMBA', 'Scripting', 'Synthesis', 'Timing'],
     focus: ['Verification', 'Digital IC direction'],
     figure: 'Illustrative — a design under test, enclosed by its verification environment.',
-    status: 'roadmap',
+    status: 'planned',
   },
   {
     n: '08',
-    title: 'Integrated Flagship',
-    titleLines: ['Integrated', 'Flagship'],
-    term: 'T8 → T9',
-    date: 'JAN → MAY 2029',
-    concept: 'The culmination of the roadmap: one integrated system drawing on the whole progression.',
-    note: 'Product and architecture are deliberately left undefined — they will be shaped by the builds before it.',
-    stack: ['PCB', 'Firmware', 'RTL', 'Linux', 'Communication', 'Verification', 'System architecture'],
+    title: 'Flagship Integrated System',
+    titleLines: ['Flagship', 'Integrated System'],
+    stage: 'System Integration',
+    concept: 'The flagship: one integrated system drawing together the strongest capabilities from the progression.',
+    note: 'Product and architecture are deliberately left open — they will be shaped by the projects that come before it.',
+    stack: ['STM32', 'FPGA', 'FreeRTOS', 'PCB', 'Embedded systems', 'Digital hardware', 'Communication', 'System integration'],
     focus: ['Integration'],
-    extra: [{ label: 'T9 polish', items: ['Measurements', 'Demo', 'README', 'Diagrams', 'Test evidence'] }],
-    figure: 'Illustrative — seven disciplines converging into one integrated stack.',
-    status: 'roadmap',
+    figure: 'Illustrative — the disciplines of the progression converging into one integrated stack.',
+    status: 'planned',
   },
 ];
 
@@ -416,19 +395,15 @@ export const families: Record<Lane['family'], string> = {
 };
 
 /* ------------------------------------------------------------------------ */
-/* Calendar helpers (roadmap position is derived from dates, never claimed)   */
+/* Progression has no calendar.                                              */
 /* ------------------------------------------------------------------------ */
 
-/** Index of the roadmap term that contains `date`, -1 before T1. Purely calendar-based. */
-export function currentTermIndex(date = new Date()): number {
-  const t = date.getFullYear() * 12 + date.getMonth();
-  let idx = -1;
-  terms.forEach((term, i) => {
-    const s = term.start[0] * 12 + term.start[1];
-    if (t >= s) idx = i;
-  });
-  // After T9's four-month window the roadmap calendar has ended.
-  const last = terms[terms.length - 1].start;
-  if (t >= last[0] * 12 + last[1] + 4) return terms.length;
-  return idx;
+/**
+ * The progression is a technical arc, not a dated schedule, so no stage is ever
+ * marked as the "current" one. This returns −1 so the world and UI light the
+ * progression evenly, with no calendar-driven "now" highlight. Retained as a
+ * named export for the modules that still import it.
+ */
+export function currentTermIndex(): number {
+  return -1;
 }

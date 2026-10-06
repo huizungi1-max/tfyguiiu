@@ -323,21 +323,18 @@ html.js .roadmap-panel {
 .term-btn-date {
   font-family: var(--f-mono);
   font-size: 9.5px;
-  letter-spacing: 0.06em;
-}
-.term-now {
-  position: absolute;
-  top: -19px;
-  left: 0;
-  font-family: var(--f-mono);
-  font-size: 9.5px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--acc);
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  color: var(--ink-3);
+  /* Stage names are long; show them only on the pressed button so the 9-column
+     bar never wraps or overflows. The full stage name always reads in the detail
+     panel below. */
   opacity: 0;
+  transition: opacity 0.3s;
 }
-.term-btn.is-now .term-now {
+.term-btn[aria-pressed='true'] .term-btn-date {
   opacity: 1;
+  color: var(--ink-2);
 }
 .term-detail {
   min-height: 12.5em;
@@ -354,9 +351,6 @@ html.js .roadmap-panel {
   font-weight: 650;
   font-size: 24px;
   letter-spacing: -0.02em;
-}
-.term-flag {
-  color: var(--acc);
 }
 .term-dl {
   display: grid;

@@ -5,7 +5,7 @@ import { PLATE } from './plates';
 import { HERO, PLAN_TOP } from './compositions';
 import { presence, type StageState, type StageSystem } from './director';
 import type { Step } from '../nav/steps';
-import { groups, terms, currentTermIndex } from '../content/content';
+import { groups, terms } from '../content/content';
 import { t as typo } from '../content/typo';
 
 /**
@@ -114,13 +114,12 @@ export class WorldType implements StageSystem {
     this.world.frontScene.add(obj);
   }
 
-  /* — term lettering on each tread ——————————————————————————————— */
+  /* — stage lettering on each tread ——————————————————————————————— */
   private buildTreads() {
-    const now = currentTermIndex();
     terms.forEach((term, i) => {
       const { obj, el } = make(
-        `<span class="wt-t-id">${term.id}</span><span class="wt-t-date">${typo(term.date)}${i === now ? '<b> · now</b>' : ''}</span>`,
-        `wt-tread${i === now ? ' is-now' : ''}`,
+        `<span class="wt-t-id">${term.id}</span><span class="wt-t-date">${typo(term.stage)}</span>`,
+        'wt-tread',
       );
       obj.quaternion.copy(FLAT);
       obj.position.set(-PLATE.W / 2 + 1.25, PLATE.T / 2 + 0.004, 0.55);

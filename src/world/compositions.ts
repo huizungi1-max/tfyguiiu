@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { PLATE, pose, type Formation, type PlatePose, type StaggerOrder, type StripMode } from './plates';
 import { shot, type MoveSpec, type Shot } from './rig';
-import { currentTermIndex } from '../content/content';
 
 /**
  * ART DIRECTION
@@ -11,8 +10,8 @@ import { currentTermIndex } from '../content/content';
  *
  *   origin      — a standing monolith; the name behind it
  *   position    — the monolith lies down and opens into a system stack
- *   roadmap     — the stack unfolds into a floating stair: one tread per term
- *   builds 1–8  — the camera climbs the stair, one build per tread
+ *   roadmap     — the stack unfolds into a floating stair: one tread per stage
+ *   builds 1–8  — the camera climbs the stair, one project per tread
  *   stack A/B   — the treads lift into a floor plan of capabilities
  *   directions  — the plan resolves into a foundation and six lanes
  *   contact     — everything closes back into the monolith, where the lanes lead
@@ -42,8 +41,6 @@ export interface Arrival {
 
 const deg = THREE.MathUtils.degToRad;
 const N = PLATE.N;
-/** The term the calendar says we are in (−1 before T1) — lit on the stair, never claimed as progress. */
-const now = currentTermIndex();
 const zeros = () => new Array(N).fill(0);
 
 function groupAt(x: number, y: number, z: number, yawDeg = 0, rollDeg = 0) {
@@ -289,11 +286,10 @@ function composeBase(kind: StepKind, sub: number, vp: Viewport): Composition {
       };
     }
     case 'roadmap': {
-      // A wide lens from below the first tread: "now" is large and close, the later terms
-      // recede and climb to the upper right — time reads forward, left to right.
+      // A wide lens from below the first tread: the foundation is large and close, the later
+      // stages recede and climb to the upper right — the progression reads forward, left to right.
       const mid = onTread(4, new THREE.Vector3(0.6, 0.2, 0));
       const accent = zeros();
-      if (now >= 0 && now < N) accent[now] = 0.8;
       return {
         formation: stair(),
         // upright: a long lens from far back lays the whole climb across the band between the copy

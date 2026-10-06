@@ -33,7 +33,7 @@ function kicker(index: number, label: string, extra = '') {
 function origin() {
   return `
 <section id="origin" class="panel panel-origin" data-section="0" aria-labelledby="origin-title">
-  <h1 id="origin-title" class="sr-only">Kaushal — Electronics &amp; Communication Engineering. Ideas into circuits; circuits into real solutions.</h1>
+  <h1 id="origin-title" class="sr-only">Kaushal — BS Electronic Systems, IIT Madras and B.Tech Electronics &amp; Communication Engineering. Embedded systems and digital hardware / FPGA-RTL.</h1>
   <img class="origin-portrait" src="/portrait.jpg" alt="" aria-hidden="true" decoding="async" fetchpriority="high" />
   <p class="doc-name" aria-hidden="true">Kaushal</p>
   <div class="origin-block">
@@ -41,7 +41,7 @@ function origin() {
       <span class="origin-bar" aria-hidden="true"></span>
       <span class="origin-head-txt">
         <span class="origin-name" aria-hidden="true">Kaushal</span>
-        <span class="origin-sub mono">Electronics &amp; Communication Engineering</span>
+        <span class="origin-sub mono">BS Electronic Systems, IIT Madras · B.Tech ECE</span>
       </span>
     </div>
     <div class="origin-primary" aria-hidden="true" data-a="rise">
@@ -86,18 +86,17 @@ function roadmap() {
   const buttons = terms
     .map(
       (term, i) =>
-        `<button class="term-btn" type="button" data-term="${i}" aria-controls="term-detail" aria-pressed="false"><span class="term-btn-id">${term.id}</span><span class="term-btn-date">${t(term.date)}</span><span class="term-now" aria-hidden="true">Now</span></button>`,
+        `<button class="term-btn" type="button" data-term="${i}" aria-controls="term-detail" aria-pressed="false"><span class="term-btn-id">${term.id}</span><span class="term-btn-date">${t(term.stage)}</span></button>`,
     )
     .join('');
   const details = terms
     .map(
       (term, i) => `
     <div class="term" data-term-panel="${i}" ${i === 0 ? '' : 'hidden'}>
-      <p class="term-head"><span class="term-id">${term.id}</span><span class="mono">${t(term.date)}</span><span class="term-flag mono" data-now-flag hidden>Current term — by calendar</span></p>
+      <p class="term-head"><span class="term-id">${term.id}</span><span class="mono">${t(term.stage)}</span></p>
       <dl class="term-dl">
-        <div><dt class="mono dim">Academic</dt><dd>${term.academic.map((a) => `<span>${t(a)}</span>`).join('')}</dd></div>
-        <div><dt class="mono dim">${t(term.technicalLabel ?? 'Technical')}</dt><dd class="dd-mono">${term.technical.map((a) => `<span>${t(a)}</span>`).join('')}</dd></div>
-        <div><dt class="mono dim">Build</dt><dd class="dd-build">${term.buildRef !== undefined ? `<span class="mono acc">${projects[term.buildRef].n}</span> ` : ''}${t(term.build)}</dd></div>
+        <div><dt class="mono dim">${t(term.domainsLabel ?? 'Domains')}</dt><dd class="dd-mono">${term.domains.map((a) => `<span>${t(a)}</span>`).join('')}</dd></div>
+        <div><dt class="mono dim">${term.buildRef !== undefined ? 'Project' : 'Groundwork'}</dt><dd class="dd-build">${term.buildRef !== undefined ? `<span class="mono acc">${projects[term.buildRef].n}</span> ` : ''}${t(term.build)}</dd></div>
       </dl>
     </div>`,
     )
@@ -105,15 +104,15 @@ function roadmap() {
   return `
 <section id="roadmap" class="panel panel-roadmap" data-section="2" aria-labelledby="roadmap-title">
   <div class="roadmap-head">
-    ${kicker(2, `Roadmap · ${site.span.from} → ${site.span.to}`)}
+    ${kicker(2, 'Progression')}
     <h2 id="roadmap-title" class="display lg">
-      <span class="sr-only">Nine terms. Eight builds. One system.</span>
-      <span aria-hidden="true">${line('Nine terms.')}${line('Eight builds.')}${line('One system.')}</span>
+      <span class="sr-only">Foundations to integration. One system.</span>
+      <span aria-hidden="true">${line('Foundations')}${line('to integration.')}${line('One system.')}</span>
     </h2>
-    <p class="lede short" data-a="rise">Each term pairs coursework with one build of increasing scope. A planned progression — presented as a roadmap, not as finished work.</p>
+    <p class="lede short" data-a="rise">An engineering progression — each stage builds on the last, pairing knowledge domains with a project of increasing scope. A technical ladder, not finished work.</p>
   </div>
   <div class="roadmap-panel" data-a="rise">
-    <div class="term-bar" role="group" aria-label="Select a term">${buttons}</div>
+    <div class="term-bar" role="group" aria-label="Select a stage">${buttons}</div>
     <div id="term-detail" class="term-detail" aria-live="polite">${details}</div>
   </div>
 </section>`;
@@ -130,10 +129,10 @@ function project(p: Project, i: number) {
   const evidence = p.evidence?.length
     ? `<div class="pj-row"><dt class="mono dim">Evidence</dt><dd>${p.evidence.map((e) => `<a class="link" href="${esc(e.href)}" target="_blank" rel="noopener">${t(e.label)}</a>`).join(' ')}</dd></div>`
     : '';
-  const statusLabel = p.status === 'complete' ? 'Complete' : p.status === 'in-progress' ? 'In progress' : 'Roadmap';
+  const statusLabel = p.status === 'complete' ? 'Complete' : p.status === 'in-progress' ? 'In progress' : 'Planned';
   return `
   <article class="project" data-project="${i}" aria-labelledby="pj-${p.n}-title" ${i === 0 ? '' : 'hidden'}>
-    <p class="pj-meta mono" data-a="fade"><span class="pj-n">Build ${p.n}<span class="dim"> / 08</span></span><span class="pj-term">${t(p.term)} · ${t(p.date)}</span><span class="pj-status" data-status="${p.status}">${statusLabel}</span></p>
+    <p class="pj-meta mono" data-a="fade"><span class="pj-n">Project ${p.n}<span class="dim"> / 08</span></span><span class="pj-term">${t(p.stage)}</span><span class="pj-status" data-status="${p.status}">${statusLabel}</span></p>
     <h3 id="pj-${p.n}-title" class="display md pj-title">
       <span class="sr-only">${t(p.title)}</span>
       <span aria-hidden="true">${p.titleLines.map((l) => line(t(l))).join('')}</span>
@@ -154,14 +153,14 @@ function builds() {
   const index = projects
     .map(
       (p, i) =>
-        `<li><button type="button" class="pidx-btn" data-goto-project="${i}" aria-label="Build ${p.n}: ${esc(p.title)}"><span class="pidx-n">${p.n}</span><span class="pidx-t">${t(p.title)}</span></button></li>`,
+        `<li><button type="button" class="pidx-btn" data-goto-project="${i}" aria-label="Project ${p.n}: ${esc(p.title)}"><span class="pidx-n">${p.n}</span><span class="pidx-t">${t(p.title)}</span></button></li>`,
     )
     .join('');
   return `
 <section id="builds" class="panel panel-builds" data-section="3" aria-labelledby="builds-title">
   <div class="builds-head">
-    ${kicker(3, 'Builds')}
-    <h2 id="builds-title" class="sr-only">Builds — eight planned engineering projects</h2>
+    ${kicker(3, 'Projects')}
+    <h2 id="builds-title" class="sr-only">Projects — eight-stage engineering progression</h2>
   </div>
   <div class="projects">${projects.map(project).join('')}</div>
   <nav class="pidx" aria-label="Project index"><ol>${index}</ol></nav>
@@ -244,7 +243,7 @@ function contact() {
   </div>
   <div class="contact-foot" data-a="fade">
     <p class="mono dim">© <span data-year>2026</span> Kaushal · ${t(site.fieldLong)}</p>
-    <p class="mono dim" data-roadmap-pos>Roadmap · ${t(`${site.span.from} → ${site.span.to}`)}</p>
+    <p class="mono dim">${t(site.primary)}</p>
     <button type="button" class="btn-ghost mono" data-goto-step="0">Return to origin <svg class="ar ar-up" viewBox="0 0 18 10" aria-hidden="true" focusable="false"><path d="M0 5h16M12 1l4 4-4 4"/></svg></button>
   </div>
 </section>`;

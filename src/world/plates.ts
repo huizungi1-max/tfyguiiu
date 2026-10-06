@@ -46,6 +46,7 @@ export class Plates {
   private accentTarget = new Float32Array(PLATE.N);
   private mode: StripMode = 'long';
   readonly material: THREE.MeshPhysicalMaterial;
+  private accentMaterial!: THREE.MeshPhysicalMaterial;
 
   constructor(opts: { segments: number; brushed: THREE.Texture; shadows: boolean }) {
     const geo = new RoundedBoxGeometry(PLATE.W, PLATE.T, PLATE.D, opts.segments, 0.035);
@@ -60,6 +61,14 @@ export class Plates {
       clearcoatRoughness: 0.14,
       envMapIntensity: 1.0,
     });
+
+    // An orange skin, applied to a chosen slab only where a composition asks for it.
+    const accentMat = this.material.clone();
+    accentMat.color = new THREE.Color('#ff5b24');
+    accentMat.emissive = new THREE.Color('#ff5b24');
+    accentMat.emissiveIntensity = 0.35;
+    accentMat.roughness = 0.3;
+    this.accentMaterial = accentMat;
 
     const longGeo = new THREE.BoxGeometry(PLATE.W * 0.97, 0.024, 0.012);
     const shortGeo = new THREE.BoxGeometry(0.012, 0.024, PLATE.D * 0.95);
@@ -91,6 +100,13 @@ export class Plates {
 
   setStripMode(mode: StripMode) {
     this.mode = mode;
+  }
+
+  /** Give one slab the orange skin (−1 clears). Used by the origin monolith. */
+  setSkin(index: number) {
+    for (let i = 0; i < this.meshes.length; i++) {
+      this.meshes[i].material = i === index ? this.accentMaterial : this.material;
+    }
   }
 
   /** Current transforms as a formation (used to start transitions from wherever we are). */

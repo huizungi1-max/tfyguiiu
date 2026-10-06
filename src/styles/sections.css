@@ -223,8 +223,9 @@ html:not(.js) .origin-name {
   width: clamp(90px, 10vw, 180px);
   display: flex;
   align-items: flex-end;
-  /* drop the run to the glyph's bottom edge rather than the row's optical centre */
-  margin-bottom: 0.08em;
+  /* sit the run near the glyph's bottom edge, with room for the stepped cap below the line */
+  margin-bottom: 0.32em;
+  overflow: visible;
   min-width: 48px;
 }
 .pl-line {

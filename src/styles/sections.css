@@ -784,8 +784,8 @@ html.js .contact-inner {
   padding: clamp(13px, 1.05vw, 17px) clamp(24px, 1.9vw, 34px);
   color: var(--glass-ink);
   border-radius: 999px;
-  /* iOS material: neutral translucent light frost (no colour tint) */
-  background: rgba(255, 255, 255, 0.14);
+  /* fully transparent glass — no fill, the blur + edge do all the work */
+  background: transparent;
   /* hairline rim, brightest at the top where the light sits */
   border: 1px solid rgba(255, 255, 255, 0.22);
   /* the signature iOS vibrancy: strong blur + saturation lift */
@@ -824,7 +824,7 @@ html.js .contact-inner {
 .contact-mail:hover,
 .contact-mail:focus-visible {
   color: var(--hi);
-  background: rgba(255, 255, 255, 0.2);
+  background: transparent;
   border-color: rgba(255, 255, 255, 0.32);
   transform: translateY(-1px);
   box-shadow:
@@ -843,7 +843,7 @@ html.js .contact-inner {
 }
 .contact-mail:active {
   transform: translateY(0);
-  background: rgba(255, 255, 255, 0.12);
+  background: transparent;
 }
 /* Safari/old browsers without backdrop-filter: fall back to a solid-ish orange so text stays legible */
 @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {

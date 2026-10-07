@@ -246,7 +246,7 @@ function contact() {
     ${kicker(6, 'Contact')}
     ${title('contact-title', ['Get in Touch'], "Let's build the *next layer.*", 'lg')}
     <div class="contact-row" data-a="rise">
-      <a class="contact-mail" href="mailto:${esc(site.contact.email)}?subject=${encodeURIComponent('Hello Kaushal')}" aria-label="Send an email to ${esc(site.contact.email)}">
+      <a class="contact-mail" href="mailto:${esc(site.contact.email)}?subject=${encodeURIComponent('Hello Kaushal')}" data-mail="${esc(site.contact.email)}" data-mail-subject="Hello Kaushal" aria-label="Send an email to ${esc(site.contact.email)}">
         <span class="contact-mail-txt">Email me</span>
         <svg class="ar" viewBox="0 0 18 10" aria-hidden="true" focusable="false"><path d="M0 5h16M12 1l4 4-4 4"/></svg>
       </a>

@@ -325,7 +325,7 @@ export class UI {
   private bind() {
     document.addEventListener('click', (e) => {
       const t = e.target as HTMLElement;
-      const el = t.closest<HTMLElement>('[data-goto-step],[data-goto-section],[data-goto-project],[data-goto-domain],[data-hstep],[data-next],[data-copy],[data-sound],[data-menu-open],[data-menu-close],[data-theme-toggle]');
+      const el = t.closest<HTMLElement>('[data-goto-step],[data-goto-section],[data-goto-project],[data-goto-domain],[data-hstep],[data-next],[data-copy],[data-mail],[data-sound],[data-menu-open],[data-menu-close],[data-theme-toggle]');
       if (!el) {
         if (this.menuOpen && t === this.menu) this.closeMenu();
         return;
@@ -347,6 +347,16 @@ export class UI {
         else this.onNav('y', 1);
       } else if (el.dataset.copy !== undefined) {
         void this.copy(el);
+      } else if (el.dataset.mail !== undefined) {
+        // On desktop (where mailto often has no handler) open Gmail compose in a new tab instead;
+        // on touch devices the mailto href is left to open the phone's mail / Gmail app.
+        const fine = window.matchMedia('(pointer: fine)').matches && !window.matchMedia('(pointer: coarse)').matches;
+        if (fine && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+          e.preventDefault();
+          const to = encodeURIComponent(el.dataset.mail);
+          const su = encodeURIComponent(el.dataset.mailSubject ?? '');
+          window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${su}`, '_blank', 'noopener');
+        }
       } else if (el.dataset.sound !== undefined) {
         const on = this.sound.toggle();
         el.setAttribute('aria-pressed', String(on));
@@ -406,6 +416,6 @@ export class UI {
     } catch {
       el.textContent = 'Select & copy';
     }
-    window.setTimeout(() => (el.textContent = 'Copy'), 1800);
+    window.setTimeout(() => (el.textContent = 'Copy address'), 1800);
   }
 }

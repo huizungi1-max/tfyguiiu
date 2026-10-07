@@ -764,23 +764,33 @@ html.js .contact-inner {
   gap: 18px;
   flex-wrap: wrap;
 }
+/* A single, obvious action — the address itself is not shown, only offered via "Copy address". */
 .contact-mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
   font-family: var(--f-display);
   font-stretch: 112%;
-  font-weight: 450;
-  font-size: clamp(22px, 2.6vw, 44px);
-  letter-spacing: -0.015em;
-  line-height: 1.1;
-  background-image: linear-gradient(var(--acc), var(--acc));
-  background-size: 100% 1px;
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-  padding-bottom: 6px;
-  transition: background-size 0.6s var(--e-out), color 0.3s;
+  font-weight: 500;
+  font-size: clamp(18px, 1.9vw, 30px);
+  letter-spacing: -0.01em;
+  line-height: 1;
+  padding: clamp(12px, 1vw, 16px) clamp(22px, 1.8vw, 30px);
+  color: var(--bg);
+  background: var(--acc);
+  border-radius: 999px;
+  transition: transform 0.3s var(--e-out), box-shadow 0.3s, filter 0.3s;
+}
+.contact-mail .ar {
+  width: 20px;
+  flex: none;
+  stroke: currentColor;
 }
 .contact-mail:hover,
 .contact-mail:focus-visible {
-  color: var(--hi);
+  filter: brightness(1.08);
+  transform: translateX(2px);
+  box-shadow: 0 0 0 1px var(--acc), 0 10px 30px -12px var(--acc);
 }
 .btn-copy {
   height: 32px;

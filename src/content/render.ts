@@ -63,7 +63,7 @@ function hnav(key: string, total: number, noun: string, firstName: string) {
 function origin() {
   return `
 <section id="origin" class="panel panel-origin" data-section="0" aria-labelledby="origin-title">
-  <h1 id="origin-title" class="sr-only">Kaushal — BS Electronic Systems, IIT Madras and B.Tech Electronics &amp; Communication Engineering. Embedded systems and digital hardware / FPGA-RTL.</h1>
+  <h1 id="origin-title" class="sr-only">Kaushal — Embedded Systems &amp; Digital Hardware</h1>
   <img class="origin-portrait" src="/portrait.jpg" alt="" aria-hidden="true" decoding="async" fetchpriority="high" />
   <p class="doc-name" aria-hidden="true">Kaushal</p>
   <div class="origin-block">

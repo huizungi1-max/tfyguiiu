@@ -832,6 +832,11 @@ html.js .contact-inner {
     inset 0 -1px 0 rgba(255, 255, 255, 0.1),
     0 12px 40px rgba(0, 0, 0, 0.22);
 }
+/* Keep the focus ring pill-shaped — the global :focus-visible squares it to 2px */
+.contact-mail:focus-visible {
+  border-radius: 999px;
+  outline-offset: 3px;
+}
 .contact-mail:hover .ar,
 .contact-mail:focus-visible .ar {
   transform: translateX(3px);

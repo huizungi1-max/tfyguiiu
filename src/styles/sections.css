@@ -192,7 +192,7 @@ html.js .origin-block {
 .origin-sub {
   color: var(--ink-3);
   letter-spacing: 0.17em;
-  font-size: clamp(9px, 0.63vw, 10px);
+  /* inherit the shared mono size (--fs-mono, 10.5–12px): the old 9–10px was below the readability floor */
 }
 html:not(.js) .origin-name {
   display: none;

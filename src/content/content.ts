@@ -27,11 +27,11 @@ export const site = {
   positioning:
     'Embedded and digital hardware engineer working across embedded firmware, hardware/PCB, FPGA/RTL, embedded Linux and semiconductor-oriented digital design — with DSP, sensors, control, communication and programming as supporting ground.',
   /**
-   * CONTACT — replace the placeholder email with your real address.
+   * CONTACT — the address the "send email" link and Copy button use.
    * Optional links render automatically once a URL is filled in.
    */
   contact: {
-    email: 'kaushal@example.com',
+    email: 'sskaushal2005@gmail.com',
     links: [
       { label: 'GitHub', href: '', display: '' },
       { label: 'LinkedIn', href: '', display: '' },

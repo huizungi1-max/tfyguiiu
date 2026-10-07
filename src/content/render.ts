@@ -246,8 +246,8 @@ function contact() {
     ${kicker(6, 'Contact')}
     ${title('contact-title', ['Get in Touch'], "Let's build the *next layer.*", 'lg')}
     <div class="contact-row" data-a="rise">
-      <a class="contact-mail" href="mailto:${esc(site.contact.email)}">${t(site.contact.email)}</a>
-      <button class="btn-copy mono" type="button" data-copy="${esc(site.contact.email)}">Copy</button>
+      <a class="contact-mail" href="mailto:${esc(site.contact.email)}?subject=${encodeURIComponent('Hello Kaushal')}" aria-label="Send an email to ${esc(site.contact.email)}">${t(site.contact.email)}</a>
+      <button class="btn-copy mono" type="button" data-copy="${esc(site.contact.email)}" aria-label="Copy email address ${esc(site.contact.email)}">Copy</button>
     </div>
     ${links ? `<ul class="contact-links mono" data-a="rise">${links}</ul>` : ''}
   </div>

@@ -784,9 +784,8 @@ html.js .contact-inner {
   padding: clamp(13px, 1.05vw, 17px) clamp(24px, 1.9vw, 34px);
   color: var(--glass-ink);
   border-radius: 999px;
-  /* Neutral light frost — translucent white (~14%), no colour tint on the body,
-     exactly like Apple's material. */
-  background: rgba(255, 255, 255, 0.14);
+  /* fully transparent glass — no fill, the blur + edge do all the work */
+  background: transparent;
   /* hairline rim, brightest at the top where the light sits */
   border: 1px solid rgba(255, 255, 255, 0.22);
   /* the signature iOS vibrancy: strong blur + saturation lift */
@@ -800,27 +799,6 @@ html.js .contact-inner {
     /* soft ambient float shadow, the way iOS panels sit above content */
     0 8px 32px rgba(0, 0, 0, 0.18);
   transition: transform 0.3s var(--e-out), box-shadow 0.4s var(--e-out), background 0.3s, border-color 0.3s, color 0.3s;
-  /* gentle idle bounce to draw the eye to the one real action */
-  animation: contact-bounce 2.4s var(--e-out) infinite;
-  transform-origin: center bottom;
-  will-change: transform;
-}
-@keyframes contact-bounce {
-  0%, 55%, 100% {
-    transform: translateY(0) scaleY(1);
-  }
-  12% {
-    transform: translateY(-10px) scaleY(1.015);
-  }
-  26% {
-    transform: translateY(0) scaleY(0.97);
-  }
-  38% {
-    transform: translateY(-4px) scaleY(1.005);
-  }
-  48% {
-    transform: translateY(0) scaleY(1);
-  }
 }
 /* soft top sheen pooled across the upper half of the pill */
 .contact-mail::before {
@@ -846,11 +824,9 @@ html.js .contact-inner {
 .contact-mail:hover,
 .contact-mail:focus-visible {
   color: var(--hi);
-  background: rgba(255, 255, 255, 0.2);
+  background: transparent;
   border-color: rgba(255, 255, 255, 0.32);
-  /* pause the idle bounce and settle into the lifted hover pose */
-  animation: none;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.55),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1),
@@ -866,21 +842,14 @@ html.js .contact-inner {
   transform: translateX(3px);
 }
 .contact-mail:active {
-  animation: none;
   transform: translateY(0);
-  background: rgba(255, 255, 255, 0.12);
+  background: transparent;
 }
 /* Safari/old browsers without backdrop-filter: fall back to a solid-ish orange so text stays legible */
 @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .contact-mail {
     background: linear-gradient(135deg, rgba(var(--acc-rgb), 0.95) 0%, rgba(var(--acc-rgb), 0.8) 100%);
     color: var(--on-acc);
-  }
-}
-/* Honour reduced-motion: no idle bounce for users who ask for less animation */
-@media (prefers-reduced-motion: reduce) {
-  .contact-mail {
-    animation: none;
   }
 }
 .contact-links {

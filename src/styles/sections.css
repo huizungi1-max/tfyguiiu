@@ -764,10 +764,10 @@ html.js .contact-inner {
   gap: 18px;
   flex-wrap: wrap;
 }
-/* A single, obvious action — a real pane of orange glass. The address itself is not
-   shown, only offered via "Copy address". Built from stacked light cues:
-   a frosted translucent body, a glossy top reflection, a bright catching rim,
-   refracted edges and a slow specular glint that sweeps across on hover. */
+/* A single, obvious action — an iOS "material" glass pill. The address itself is not
+   shown, only offered via "Copy address". Apple's frosted material: a neutral light
+   frost, heavy background blur with vibrancy (saturation boost), a hairline highlight
+   border, a soft top sheen and a gentle floating shadow. Orange is kept for the ink. */
 .contact-mail {
   position: relative;
   isolation: isolate;
@@ -784,82 +784,53 @@ html.js .contact-inner {
   padding: clamp(13px, 1.05vw, 17px) clamp(24px, 1.9vw, 34px);
   color: var(--glass-ink);
   border-radius: 999px;
-  /* transparent border so the gradient-painted rim (border-image) shows the light catch */
-  border: 1px solid transparent;
-  /* FULL GLASS: the body is essentially clear — just light pooling in the upper-left
-     and the faintest orange breath at the base. The strong blur does the work,
-     so the page refracts right through the button. */
-  background:
-    radial-gradient(130% 120% at 22% 8%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.1) 24%, rgba(255, 255, 255, 0) 46%),
-    linear-gradient(150deg, rgba(255, 255, 255, 0.1) 0%, rgba(var(--acc-rgb), 0.06) 55%, rgba(var(--acc-rgb), 0.1) 100%);
-  background-origin: border-box;
-  /* refractive rim: bright glass edge where light hits (top-left), orange catch at the base */
-  border-image: linear-gradient(150deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.3) 38%, rgba(var(--acc-rgb), 0.55) 72%, rgba(var(--acc-rgb), 0.35) 100%) 1;
-  -webkit-backdrop-filter: blur(22px) saturate(1.9) brightness(1.1);
-  backdrop-filter: blur(22px) saturate(1.9) brightness(1.1);
+  /* iOS material: neutral translucent light frost (no colour tint) */
+  background: rgba(255, 255, 255, 0.14);
+  /* hairline rim, brightest at the top where the light sits */
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  /* the signature iOS vibrancy: strong blur + saturation lift */
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
   box-shadow:
-    /* crisp light caught on the very top edge */
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    /* orange light trapped and ringing the inner wall of the clear pane */
-    inset 0 0 26px rgba(var(--acc-rgb), 0.22),
-    /* faint shadow on the lower inner wall gives the glass thickness */
-    inset 0 -10px 20px -10px rgba(90, 20, 0, 0.35),
-    /* contact + cast shadow lifting it off the page */
-    0 2px 5px rgba(10, 10, 20, 0.22),
-    0 16px 44px -14px rgba(var(--acc-rgb), 0.5);
-  transition: transform 0.35s var(--e-out), box-shadow 0.45s var(--e-out), border-color 0.3s, color 0.3s;
+    /* bright hairline of light along the top inner edge */
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    /* faint inner floor shadow for material thickness */
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    /* soft ambient float shadow, the way iOS panels sit above content */
+    0 8px 32px rgba(0, 0, 0, 0.18);
+  transition: transform 0.3s var(--e-out), box-shadow 0.4s var(--e-out), background 0.3s, border-color 0.3s, color 0.3s;
 }
-/* glossy reflection: a bright sheen pooled across the top half of the pane */
+/* soft top sheen pooled across the upper half of the pill */
 .contact-mail::before {
   content: "";
   position: absolute;
   inset: 1px 1px auto 1px;
-  height: 52%;
+  height: 50%;
   border-radius: 999px 999px 60% 60% / 999px 999px 90% 90%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.14) 55%, rgba(255, 255, 255, 0) 100%);
-  opacity: 0.9;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0) 100%);
   pointer-events: none;
   z-index: 1;
 }
-/* specular glint: a tight diagonal highlight that rests off-screen and sweeps through on hover */
-.contact-mail::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -60%;
-  width: 45%;
-  height: 100%;
-  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.55) 50%, transparent 100%);
-  filter: blur(2px);
-  transform: skewX(-16deg);
-  pointer-events: none;
-  z-index: 2;
-  transition: left 0.65s var(--e-out);
-}
 .contact-mail > * {
   position: relative;
-  z-index: 3;
+  z-index: 2;
 }
 .contact-mail .ar {
   width: 20px;
   flex: none;
   stroke: currentColor;
-  transition: transform 0.35s var(--e-out);
+  transition: transform 0.3s var(--e-out);
 }
 .contact-mail:hover,
 .contact-mail:focus-visible {
   color: var(--hi);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.32);
+  transform: translateY(-1px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.75),
-    inset 0 0 32px rgba(var(--acc-rgb), 0.45),
-    inset 0 -10px 22px -10px rgba(90, 20, 0, 0.5),
-    0 3px 6px rgba(90, 20, 0, 0.28),
-    0 22px 52px -14px rgba(var(--acc-rgb), 0.8);
-}
-.contact-mail:hover::after,
-.contact-mail:focus-visible::after {
-  left: 120%;
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    0 12px 40px rgba(0, 0, 0, 0.22);
 }
 .contact-mail:hover .ar,
 .contact-mail:focus-visible .ar {
@@ -867,18 +838,13 @@ html.js .contact-inner {
 }
 .contact-mail:active {
   transform: translateY(0);
+  background: rgba(255, 255, 255, 0.12);
 }
 /* Safari/old browsers without backdrop-filter: fall back to a solid-ish orange so text stays legible */
 @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .contact-mail {
     background: linear-gradient(135deg, rgba(var(--acc-rgb), 0.95) 0%, rgba(var(--acc-rgb), 0.8) 100%);
     color: var(--on-acc);
-  }
-}
-/* Honour reduced-motion: keep the glass, drop the sweeping glint animation */
-@media (prefers-reduced-motion: reduce) {
-  .contact-mail::after {
-    display: none;
   }
 }
 .btn-copy {

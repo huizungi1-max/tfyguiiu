@@ -786,26 +786,27 @@ html.js .contact-inner {
   border-radius: 999px;
   /* transparent border so the gradient-painted rim (border-image) shows the light catch */
   border: 1px solid transparent;
-  /* translucent orange tint over the page = frosted glass body;
-     the second (radial) layer fakes light pooling in the upper-left */
+  /* FULL GLASS: the body is essentially clear — just light pooling in the upper-left
+     and the faintest orange breath at the base. The strong blur does the work,
+     so the page refracts right through the button. */
   background:
-    radial-gradient(130% 120% at 22% 8%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.08) 26%, rgba(255, 255, 255, 0) 48%),
-    linear-gradient(150deg, rgba(var(--acc-rgb), 0.56) 0%, rgba(var(--acc-rgb), 0.26) 46%, rgba(var(--acc-rgb), 0.12) 100%);
+    radial-gradient(130% 120% at 22% 8%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.1) 24%, rgba(255, 255, 255, 0) 46%),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.1) 0%, rgba(var(--acc-rgb), 0.06) 55%, rgba(var(--acc-rgb), 0.1) 100%);
   background-origin: border-box;
-  /* refractive rim: brighter where light hits (top-left), dimmer at the base */
-  border-image: linear-gradient(150deg, rgba(255, 255, 255, 0.85) 0%, rgba(var(--acc-rgb), 0.5) 42%, rgba(var(--acc-rgb), 0.2) 70%, rgba(255, 255, 255, 0.28) 100%) 1;
-  -webkit-backdrop-filter: blur(16px) saturate(1.9) brightness(1.08);
-  backdrop-filter: blur(16px) saturate(1.9) brightness(1.08);
+  /* refractive rim: bright glass edge where light hits (top-left), orange catch at the base */
+  border-image: linear-gradient(150deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.3) 38%, rgba(var(--acc-rgb), 0.55) 72%, rgba(var(--acc-rgb), 0.35) 100%) 1;
+  -webkit-backdrop-filter: blur(22px) saturate(1.9) brightness(1.1);
+  backdrop-filter: blur(22px) saturate(1.9) brightness(1.1);
   box-shadow:
     /* crisp light caught on the very top edge */
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    /* soft bloom of colour trapped inside the pane */
-    inset 0 0 24px rgba(var(--acc-rgb), 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    /* orange light trapped and ringing the inner wall of the clear pane */
+    inset 0 0 26px rgba(var(--acc-rgb), 0.22),
     /* faint shadow on the lower inner wall gives the glass thickness */
-    inset 0 -10px 20px -10px rgba(90, 20, 0, 0.5),
+    inset 0 -10px 20px -10px rgba(90, 20, 0, 0.35),
     /* contact + cast shadow lifting it off the page */
-    0 2px 4px rgba(90, 20, 0, 0.25),
-    0 14px 40px -14px rgba(var(--acc-rgb), 0.6);
+    0 2px 5px rgba(10, 10, 20, 0.22),
+    0 16px 44px -14px rgba(var(--acc-rgb), 0.5);
   transition: transform 0.35s var(--e-out), box-shadow 0.45s var(--e-out), border-color 0.3s, color 0.3s;
 }
 /* glossy reflection: a bright sheen pooled across the top half of the pane */

@@ -13,7 +13,9 @@
   --line: rgba(var(--ink-rgb), 0.14);
   --line-2: rgba(var(--ink-rgb), 0.07);
   --acc: #ff5b24;
+  --acc-rgb: 255, 91, 36;
   --acc-dim: rgba(255, 91, 36, 0.5);
+  --glass-ink: #ffe3d4; /* warm near-white — reads on the orange glass over the dark page */
   --hi: #fff;
   --on-acc: #0b0b0c;
   --panel: rgba(8, 8, 9, 0.94);
@@ -55,7 +57,9 @@ html[data-theme='light'] {
   --line: rgba(var(--ink-rgb), 0.15);
   --line-2: rgba(var(--ink-rgb), 0.08);
   --acc: #ec4a12;
+  --acc-rgb: 236, 74, 18;
   --acc-dim: rgba(236, 74, 18, 0.55);
+  --glass-ink: #5c1c06; /* deep burnt orange — reads on the pale orange glass over paper */
   --hi: #000;
   --on-acc: #fff;
   --panel: rgba(241, 238, 232, 0.96);

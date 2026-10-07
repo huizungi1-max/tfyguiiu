@@ -250,7 +250,6 @@ function contact() {
         <span class="contact-mail-txt">Email me</span>
         <svg class="ar" viewBox="0 0 18 10" aria-hidden="true" focusable="false"><path d="M0 5h16M12 1l4 4-4 4"/></svg>
       </a>
-      <button class="btn-copy mono" type="button" data-copy="${esc(site.contact.email)}" aria-label="Copy email address ${esc(site.contact.email)}">Copy address</button>
     </div>
     ${links ? `<ul class="contact-links mono" data-a="rise">${links}</ul>` : ''}
   </div>

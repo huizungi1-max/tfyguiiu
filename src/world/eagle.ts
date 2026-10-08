@@ -635,12 +635,12 @@ export class Eagle implements StageSystem {
     this.bird.add(this.head);
 
     // skull: long, flat-crowned and broad behind the eyes, narrowing down into the face
-    const skull = ellipsoid([0.064, 0.056, 0.102], [0, 0, 0], [24, 14]);
+    const skull = ellipsoid([0.064, 0.056, 0.114], [0, 0, 0.006], [24, 14]);
     {
       const p = skull.attributes.position as THREE.BufferAttribute;
       for (let i = 0; i < p.count; i++) {
         const z = p.getZ(i);
-        const front = smoothstep(0.0, 0.1, z);
+        const front = smoothstep(0.0, 0.115, z);
         let y = p.getY(i);
         if (y > 0) y *= 0.8 - 0.12 * front; // flat crown sloping to the brow
         p.setXYZ(i, p.getX(i) * (1 - 0.28 * front), y - 0.008 * front, z);
@@ -650,11 +650,11 @@ export class Eagle implements StageSystem {
     }
     const brow = (sx: number) =>
       // the heavy supraorbital ridge that overhangs the eye: the eagle's frown
-      tag(ellipsoid([0.024, 0.013, 0.056], [0.04 * sx, 0.019, 0.054], [6, 4], 'z', [0.28, -0.3 * sx, 0.16 * sx]), 0.2, PLUMAGE);
+      tag(ellipsoid([0.024, 0.013, 0.056], [0.04 * sx, 0.019, 0.062], [6, 4], 'z', [0.28, -0.3 * sx, 0.16 * sx]), 0.2, PLUMAGE);
     this.mesh(
       mergeGeometries([
         tag(skull, 0.2, PLUMAGE),
-        tag(ellipsoid([0.056, 0.048, 0.078], [0, -0.026, 0.016], [20, 10]), 0.25, PLUMAGE),
+        tag(ellipsoid([0.056, 0.048, 0.088], [0, -0.026, 0.022], [20, 10]), 0.25, PLUMAGE),
         brow(1),
         brow(-1),
       ]),
@@ -669,7 +669,7 @@ export class Eagle implements StageSystem {
     {
       const n = 48;
       let y = 0.006;
-      let z = 0.068;
+      let z = 0.081;
       for (let i = 0; i <= n; i++) {
         cl.push([y, z]);
         const a = 0.1 + 1.65 * Math.pow(i / n, 2.4); // angle below level
@@ -693,7 +693,7 @@ export class Eagle implements StageSystem {
       );
     const TIP = 0.7;
     const lower = loft(
-      (t) => [-0.015 - 0.011 * t, 0.066 + 0.05 * t],
+      (t) => [-0.015 - 0.011 * t, 0.079 + 0.05 * t],
       (t) => [0.0135 * (1 - 0.6 * t) + 0.0012, 0.0058 * (1 - 0.4 * t) + 0.001],
       12,
       12,
@@ -702,11 +702,11 @@ export class Eagle implements StageSystem {
     this.mesh(tag(part(TIP, 1, 14), 0.11, HORN), this.m.beakTip, this.head);
 
     // cere over the beak's root with its nostril, and the yellow gape running back under the eye
-    const flesh: THREE.BufferGeometry[] = [tag(ellipsoid([0.022, 0.017, 0.024], [0, 0.014, 0.074], [1, 1], 'z', [0, 0, 0], [16, 12]), 0.1, HORN)];
+    const flesh: THREE.BufferGeometry[] = [tag(ellipsoid([0.022, 0.017, 0.024], [0, 0.014, 0.087], [1, 1], 'z', [0, 0, 0], [16, 12]), 0.1, HORN)];
     const nostrils: THREE.BufferGeometry[] = [];
     for (const sx of [-1, 1]) {
-      flesh.push(tag(ellipsoid([0.0055, 0.006, 0.026], [0.027 * sx, -0.016, 0.056], [1, 1], 'z', [0.1, -0.6 * sx, 0], [12, 8]), 0.1, HORN));
-      nostrils.push(tag(ellipsoid([0.0028, 0.004, 0.0065], [0.0195 * sx, 0.015, 0.083], [1, 1], 'z', [0, -0.3 * sx, 0], [10, 8]), 0.1, HORN));
+      flesh.push(tag(ellipsoid([0.0055, 0.006, 0.026], [0.027 * sx, -0.016, 0.066], [1, 1], 'z', [0.1, -0.6 * sx, 0], [12, 8]), 0.1, HORN));
+      nostrils.push(tag(ellipsoid([0.0028, 0.004, 0.0065], [0.0195 * sx, 0.015, 0.096], [1, 1], 'z', [0, -0.3 * sx, 0], [10, 8]), 0.1, HORN));
     }
     this.mesh(mergeGeometries(flesh), this.m.cere, this.head);
     this.mesh(mergeGeometries(nostrils), this.m.beakTip, this.head);
@@ -716,7 +716,7 @@ export class Eagle implements StageSystem {
       const g = new THREE.SphereGeometry(0.0135, 20, 16);
       g.rotateZ((-sx * Math.PI) / 2);
       g.rotateY(-sx * 0.42);
-      g.translate(0.044 * sx, 0.009, 0.057);
+      g.translate(0.044 * sx, 0.009, 0.064);
       this.mesh(tag(g, 0, HORN), this.m.eye, this.head);
     }
 
@@ -743,10 +743,10 @@ export class Eagle implements StageSystem {
   private buildLegs() {
     // [yaw, pitch, toe length, claw radius]: three toes forward, the hallux back with the biggest hook
     const digits: [number, number, number, number][] = [
-      [-0.55, 0.7, 0.07, 0.026],
-      [0, 0.6, 0.08, 0.028],
-      [0.55, 0.7, 0.066, 0.025],
-      [Math.PI, 0.5, 0.055, 0.032],
+      [-0.55, 0.7, 0.07, 0.031],
+      [0, 0.6, 0.08, 0.034],
+      [0.55, 0.7, 0.066, 0.03],
+      [Math.PI, 0.5, 0.055, 0.039],
     ];
     const T = 0.09; // tarsus
     const BOOT = 0.062; // feathered down to here
@@ -805,12 +805,12 @@ export class Eagle implements StageSystem {
           16,
           12,
         );
-        const sweep = 1.9;
+        const sweep = 2.0;
         const claw = loft(
           (t) => [-(R - R * Math.cos(sweep * t)), R * Math.sin(sweep * t)],
           (t) => {
             const k = Math.pow(1 - t, 0.85);
-            return [0.0068 * k + 0.0004, 0.0084 * k + 0.0004];
+            return [0.0072 * k + 0.0004, 0.0088 * k + 0.0004];
           },
           16,
           10,

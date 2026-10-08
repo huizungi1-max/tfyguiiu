@@ -25,5 +25,11 @@ export default defineConfig({
     cssMinify: true,
     assetsInlineLimit: 0,
     chunkSizeWarningLimit: 900,
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        sheet: 'eagle-sheet.html',
+      },
+    },
   },
 });

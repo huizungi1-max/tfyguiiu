@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Eagle — 3D Reference Sheet</title>
+    <meta name="theme-color" content="#050506" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div id="bar">
+      <a href="./">← Portfolio</a>
+      <button id="anim">▶ Animate</button>
+      <button id="export">Export PNG</button>
+      <span class="hint">Click any panel to orbit it in 3D</span>
+    </div>
+    <div id="sheet"></div>
+    <div id="modal">
+      <div id="mhead"><span id="mtitle"></span><span class="sp"></span><button id="manim">❚❚ Pause flap</button><button id="mclose">✕ Close</button></div>
+      <canvas id="mcv"></canvas>
+    </div>
+    <script type="module" src="/src/sheet/sheet.ts"></script>
+  </body>
+</html>

@@ -31,3 +31,7 @@ Every push to `main` will build and deploy automatically.
 - Dev-only URL params: `?step=N&nointro&q=low|high&reduced&debug&shot=az,el,dist,fov,sx,sy,dx,dy,dz`,
   and `fly=0..1` to hold the hero eagle at a point of its flight.
 - Eagle close-ups (pose / wing-beat checks): `node scripts/eagle.mjs --fly 0.45` → `.shots/`.
+
+## Eagle reference sheet
+
+`/eagle-sheet.html` shows the hero eagle (same model, orange rim and glide pose — the hero itself is untouched) from the 14 views of the reference board: front, back, sides, top, bottom, four diagonals, head and talon close-ups, a wing-beat strip and a flight path. Click a panel to orbit it; *Animate* runs the wing beat; *Export PNG* saves the board.

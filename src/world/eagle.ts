@@ -394,7 +394,9 @@ const FRAG = /* glsl */ `
       emitK = 0.75;
     } else {
       float r = 1.0 - vUv.y;                                  // 0 at the pupil
-      alb = mix(vec3(0.0), uColor, smoothstep(0.05, 0.075, r)) * (1.0 - smoothstep(0.2, 0.26, r));
+      // amber iris, darker toward its rim, around a large pupil
+      vec3 iris = uColor * mix(1.15, 0.5, smoothstep(0.1, 0.24, r));
+      alb = mix(vec3(0.0), iris, smoothstep(0.075, 0.1, r)) * (1.0 - smoothstep(0.22, 0.25, r));
       spec = vec3(pow(max(dot(N, normalize(uLk + V)), 0.0), 160.0) * 2.5);
       emitK = 0.0;
     }
@@ -416,7 +418,7 @@ const FRAG = /* glsl */ `
     #include <colorspace_fragment>
   }`;
 
-type MatName = 'feather' | 'plumage' | 'beak' | 'cere' | 'foot' | 'talon' | 'eye';
+type MatName = 'feather' | 'plumage' | 'beak' | 'beakTip' | 'cere' | 'foot' | 'talon' | 'eye';
 
 interface Wing {
   shoulder: THREE.Group;
@@ -517,8 +519,9 @@ export class Eagle implements StageSystem {
       beak: mat(2, '#cf8a26'),
       cere: mat(2, '#dd9a30'),
       foot: mat(2, '#d39332', 22),
+      beakTip: mat(2, '#2a1e16'),
       talon: mat(2, '#17120f'),
-      eye: mat(3, '#e09a26'),
+      eye: mat(3, '#d88a20'),
     };
 
     this.glow = world.q.tier === 'low' ? null : new Glow(world.renderer);
@@ -630,40 +633,90 @@ export class Eagle implements StageSystem {
   private buildHead() {
     this.head.position.set(0, 0.11, 0.35);
     this.bird.add(this.head);
-    // skull (long, flat-crowned), deep jaw, and the brow ridges that give the stern look
+
+    // skull: long, flat-crowned and broad behind the eyes, narrowing down into the face
+    const skull = ellipsoid([0.064, 0.056, 0.102], [0, 0, 0], [24, 14]);
+    {
+      const p = skull.attributes.position as THREE.BufferAttribute;
+      for (let i = 0; i < p.count; i++) {
+        const z = p.getZ(i);
+        const front = smoothstep(0.0, 0.1, z);
+        let y = p.getY(i);
+        if (y > 0) y *= 0.8 - 0.12 * front; // flat crown sloping to the brow
+        p.setXYZ(i, p.getX(i) * (1 - 0.28 * front), y - 0.008 * front, z);
+      }
+      skull.computeVertexNormals();
+      weld(skull);
+    }
+    const brow = (sx: number) =>
+      // the heavy supraorbital ridge that overhangs the eye: the eagle's frown
+      tag(ellipsoid([0.024, 0.013, 0.056], [0.04 * sx, 0.019, 0.054], [6, 4], 'z', [0.28, -0.3 * sx, 0.16 * sx]), 0.2, PLUMAGE);
     this.mesh(
       mergeGeometries([
-        tag(ellipsoid([0.066, 0.057, 0.1], [0, 0, 0], [24, 14]), 0.2, PLUMAGE),
-        tag(ellipsoid([0.058, 0.05, 0.08], [0, -0.027, 0.014], [20, 10]), 0.25, PLUMAGE),
-        tag(ellipsoid([0.026, 0.016, 0.054], [0.04, 0.03, 0.052], [6, 4], 'z', [0.14, -0.26, 0]), 0.2, PLUMAGE),
-        tag(ellipsoid([0.026, 0.016, 0.054], [-0.04, 0.03, 0.052], [6, 4], 'z', [0.14, 0.26, 0]), 0.2, PLUMAGE),
+        tag(skull, 0.2, PLUMAGE),
+        tag(ellipsoid([0.056, 0.048, 0.078], [0, -0.026, 0.016], [20, 10]), 0.25, PLUMAGE),
+        brow(1),
+        brow(-1),
       ]),
       this.m.plumage,
       this.head,
     );
 
-    // hooked beak: a deep upper mandible curling down past a shorter lower one
-    const upper = loft(
-      (t) => [0.01 + 0.012 * Math.sin(t * 1.6) * (1 - t) - 0.064 * Math.pow(t, 3.0), 0.078 + 0.088 * (t - 0.22 * t ** 5)],
-      (t) => [0.025 * (1 - 0.82 * Math.pow(t, 1.3)) + 0.0009, 0.03 * (1 - 0.78 * Math.pow(t, 1.15)) + 0.0009],
-      28,
-      16,
-    );
+    // Hooked beak, deep at the base and flattened at the sides: the culmen runs nearly level, then
+    // rolls over into a short sharp hook that overhangs the lower mandible. Horn-dark at the tip.
+    const L = 0.088;
+    const cl: [number, number][] = [];
+    {
+      const n = 48;
+      let y = 0.006;
+      let z = 0.068;
+      for (let i = 0; i <= n; i++) {
+        cl.push([y, z]);
+        const a = 0.1 + 1.65 * Math.pow(i / n, 2.4); // angle below level
+        y -= (Math.sin(a) * L) / n;
+        z += (Math.cos(a) * L) / n;
+      }
+    }
+    const along = (t: number): [number, number] => {
+      const f = clamp(t) * (cl.length - 1);
+      const i = Math.min(cl.length - 2, Math.floor(f));
+      const k = f - i;
+      return [lerp(cl[i][0], cl[i + 1][0], k), lerp(cl[i][1], cl[i + 1][1], k)];
+    };
+    const girth = (t: number): [number, number] => [0.019 * Math.pow(1 - t, 0.75) + 0.0012, 0.027 * (1 - 0.8 * Math.pow(t, 0.9)) + 0.0012];
+    const part = (t0: number, t1: number, rows: number) =>
+      loft(
+        (s) => along(lerp(t0, t1, s)),
+        (s) => girth(lerp(t0, t1, s)),
+        rows,
+        18,
+      );
+    const TIP = 0.7;
     const lower = loft(
-      (t) => [-0.02 - 0.011 * t, 0.074 + 0.064 * t],
-      (t) => [0.02 * (1 - 0.7 * t) + 0.0014, 0.0095 * (1 - 0.45 * t) + 0.0012],
+      (t) => [-0.015 - 0.011 * t, 0.066 + 0.05 * t],
+      (t) => [0.0135 * (1 - 0.6 * t) + 0.0012, 0.0058 * (1 - 0.4 * t) + 0.001],
       12,
       12,
     );
-    this.mesh(mergeGeometries([tag(upper, 0.1, HORN), tag(lower, 0.12, HORN)]), this.m.beak, this.head);
-    this.mesh(tag(ellipsoid([0.027, 0.025, 0.026], [0, 0.009, 0.084], [1, 1], 'z', [0, 0, 0], [16, 12]), 0.1, HORN), this.m.cere, this.head);
+    this.mesh(mergeGeometries([tag(part(0, TIP, 28), 0.1, HORN), tag(lower, 0.12, HORN)]), this.m.beak, this.head);
+    this.mesh(tag(part(TIP, 1, 14), 0.11, HORN), this.m.beakTip, this.head);
 
-    // eyes under the brow, looking out and a little forward
+    // cere over the beak's root with its nostril, and the yellow gape running back under the eye
+    const flesh: THREE.BufferGeometry[] = [tag(ellipsoid([0.022, 0.017, 0.024], [0, 0.014, 0.074], [1, 1], 'z', [0, 0, 0], [16, 12]), 0.1, HORN)];
+    const nostrils: THREE.BufferGeometry[] = [];
     for (const sx of [-1, 1]) {
-      const g = new THREE.SphereGeometry(0.0128, 18, 14);
+      flesh.push(tag(ellipsoid([0.0055, 0.006, 0.026], [0.027 * sx, -0.016, 0.056], [1, 1], 'z', [0.1, -0.6 * sx, 0], [12, 8]), 0.1, HORN));
+      nostrils.push(tag(ellipsoid([0.0028, 0.004, 0.0065], [0.0195 * sx, 0.015, 0.083], [1, 1], 'z', [0, -0.3 * sx, 0], [10, 8]), 0.1, HORN));
+    }
+    this.mesh(mergeGeometries(flesh), this.m.cere, this.head);
+    this.mesh(mergeGeometries(nostrils), this.m.beakTip, this.head);
+
+    // eyes set deep under the brow, looking out and forward
+    for (const sx of [-1, 1]) {
+      const g = new THREE.SphereGeometry(0.0135, 20, 16);
       g.rotateZ((-sx * Math.PI) / 2);
-      g.rotateY(-sx * 0.38);
-      g.translate(0.05 * sx, 0.013, 0.056);
+      g.rotateY(-sx * 0.42);
+      g.translate(0.044 * sx, 0.009, 0.057);
       this.mesh(tag(g, 0, HORN), this.m.eye, this.head);
     }
 
@@ -688,14 +741,15 @@ export class Eagle implements StageSystem {
   }
 
   private buildLegs() {
-    // [yaw, pitch, length]: three toes forward, the hallux back
-    const digits: V3[] = [
-      [-0.5, 0.72, 0.062],
-      [0, 0.6, 0.07],
-      [0.5, 0.72, 0.06],
-      [Math.PI, 0.45, 0.05],
+    // [yaw, pitch, toe length, claw radius]: three toes forward, the hallux back with the biggest hook
+    const digits: [number, number, number, number][] = [
+      [-0.55, 0.7, 0.07, 0.026],
+      [0, 0.6, 0.08, 0.028],
+      [0.55, 0.7, 0.066, 0.025],
+      [Math.PI, 0.5, 0.055, 0.032],
     ];
     const T = 0.09; // tarsus
+    const BOOT = 0.062; // feathered down to here
     for (const sx of [-1, 1]) {
       // feathered thigh, with a fringe hanging off its back edge
       this.mesh(tag(ellipsoid([0.046, 0.074, 0.06], [0.052 * sx, -0.112, -0.03], [12, 7], 'y', [-0.35, 0, 0.12 * sx]), 0.5, PLUMAGE), this.m.plumage, this.bird);
@@ -715,31 +769,54 @@ export class Eagle implements StageSystem {
       }
       this.mesh(mergeGeometries(fringe), this.m.feather, this.bird);
 
-      // the leg hangs from the knee: yellow tarsus, open toes, black hooked talons
       const leg = new THREE.Group();
       leg.position.set(0.052 * sx, -0.158, -0.012);
       this.bird.add(leg);
-      const toes: THREE.BufferGeometry[] = [loft((t) => [-T * t, 0.004 * t], () => [0.0125, 0.0135], 6, 12)];
-      const claws: THREE.BufferGeometry[] = [];
-      for (const [yaw, pitch, L] of digits) {
-        const toe = loft(
-          (t) => [-0.12 * L * t * t, L * t],
-          (t) => {
-            const r = 0.0088 * (1 - 0.3 * t);
-            return [r, r * 0.9];
-          },
-          8,
-          10,
+
+      // the tarsus is feathered almost to the toes ("booted"), its hem a ring of small feathers
+      this.mesh(tag(ellipsoid([0.021, 0.046, 0.024], [0, -0.03, 0.001], [10, 7], 'y'), 0.55, PLUMAGE), this.m.plumage, leg);
+      const hem: THREE.BufferGeometry[] = [];
+      for (let k = 0; k < 9; k++) {
+        const a = (k / 9) * Math.PI * 2;
+        hem.push(
+          placed(
+            feather(0.036, 0.028, { tip: 0.4, bend: -0.02, camber: 0.22, layer: SMALL, seed: 860 + k + 10 * sx }),
+            -Math.sin(a) * 0.017,
+            -0.05,
+            -Math.cos(a) * 0.019,
+            a,
+            -Math.PI / 2 + 0.35,
+          ),
         );
-        const R = 0.034 / 1.5;
+      }
+      this.mesh(mergeGeometries(hem), this.m.feather, leg);
+
+      // bare scaled feet: thick padded toes, long black hooked talons
+      const toes: THREE.BufferGeometry[] = [loft((t) => [-BOOT - (T - BOOT) * t, 0.004 * t], () => [0.0135, 0.0145], 4, 12)];
+      const claws: THREE.BufferGeometry[] = [];
+      for (const [yaw, pitch, Lt, R] of digits) {
+        const toe = loft(
+          (t) => [-0.12 * Lt * t * t, Lt * t],
+          (t) => {
+            const pad = 1 + 0.14 * Math.pow(Math.abs(Math.sin(t * Math.PI * 2.5)), 2); // one bulge per phalanx
+            const r = 0.0105 * (1 - 0.32 * t) * pad;
+            return [r, r * 0.92];
+          },
+          16,
+          12,
+        );
+        const sweep = 1.9;
         const claw = loft(
-          (t) => [-(R - R * Math.cos(1.5 * t)), R * Math.sin(1.5 * t)],
-          (t) => [0.0058 * (1 - t) + 0.0005, 0.0068 * (1 - t) + 0.0005],
+          (t) => [-(R - R * Math.cos(sweep * t)), R * Math.sin(sweep * t)],
+          (t) => {
+            const k = Math.pow(1 - t, 0.85);
+            return [0.0068 * k + 0.0004, 0.0084 * k + 0.0004];
+          },
+          16,
           10,
-          8,
         );
         claw.rotateX(Math.atan(0.24)); // continue the toe's own curve
-        claw.translate(0, -0.12 * L, L);
+        claw.translate(0, -0.12 * Lt, Lt - 0.003);
         const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ')).setPosition(0, -T, 0.004);
         toes.push(toe.applyMatrix4(m));
         claws.push(claw.applyMatrix4(m));
